@@ -58,7 +58,56 @@ private:
     // zeros out the node
     void erase_node();
 
+    BPlusTree<T>* next = nullptr;
 public:
+
+    class Iterator {
+    private:
+        BPlusTree<T>* node_ptr;
+        int offset;
+    public:
+        friend class BPlusTree;
+
+        Iterator(BPlusTree<T>* ptr = nullptr, int offset = 0): node_ptr(ptr), 
+                                                               offset(offset) {}
+
+        T operator*() {
+            assert(offset < node_ptr->data_size);
+            return node_ptr->data[offset];
+        }
+
+        // i++
+        Iterator operator++(int) {
+            Iterator temp = *this;
+            if (offset < node_ptr->data_size - 1)
+                offset++;
+            else {
+                node_ptr = node_ptr->next;
+                offset = 0;
+            }
+            return temp;
+        }
+
+        // ++i
+        Iterator operator++() {
+            if (offset < node_ptr->data_size - 1)
+                ++offset;
+            else {
+                node_ptr = node_ptr->next;
+                offset = 0;
+            }
+            return *this;
+        }
+        friend bool operator==(const Iterator& left, const Iterator& right) {
+            return left.node_ptr == right.node_ptr;
+        }
+
+        friend bool operator!=(const Iterator& left, const Iterator& right) {
+            return left.node_ptr != right.node_ptr;
+        }
+        bool is_null() { return !node_ptr; }
+    };
+
     BPlusTree(bool duplicates_allowed = false);
     BPlusTree(const BPlusTree<T>& other);
     ~BPlusTree();
@@ -89,12 +138,20 @@ public:
     bool empty() const;
 
     //print a readable version of the tree
-    void print_tree(std::ostream& outs = std::cout, int level = 0) const;
+    void print_as_tree(std::ostream& outs = std::cout, int level = 0) const;
+
+    BPlusTree<T>* get_smallest_node();
+    void print_as_linked(std::ostream& outs = std::cout);
+    void print_as_list(std::ostream& outs = std::cout);
 
     friend std::ostream& operator<<(std::ostream& outs, const BPlusTree<T>& tree){
-        tree.print_tree(outs);
+        tree.print_as_tree(outs);
         return outs;
     }
+
+    // Iterators
+    Iterator begin();
+    Iterator end();
 };
 
 template <typename T>
@@ -146,13 +203,13 @@ void BPlusTree<T>::copy_tree(const BPlusTree<T>& other) {
 }
 
 template <typename T>
-void BPlusTree<T>::print_tree(std::ostream& outs, int level) const {\
+void BPlusTree<T>::print_as_tree(std::ostream& outs, int level) const {\
     // if not leaf keep recursioning down until it is
     if (subset_size > 1) {
         // print half of the subset backwards
         for (size_t i = subset_size - 1; i >= subset_size / 2; i--) {
             if (subset[i] != nullptr)
-                subset[i]->print_tree(outs, level + 1);
+                subset[i]->print_as_tree(outs, level + 1);
             else {
                 array::print_array(data, 0, level + 1, outs);
                 outs << std::endl;
@@ -168,7 +225,7 @@ void BPlusTree<T>::print_tree(std::ostream& outs, int level) const {\
         // print the other half
         for (int i = (subset_size / 2) - 1; i >= 0; i--) {
             if (subset[i] != nullptr)
-                subset[i]->print_tree(outs, level + 1);
+                subset[i]->print_as_tree(outs, level + 1);
             else {
                 array::print_array(data, 0, level + 1, outs);
                 outs << std::endl;
@@ -234,22 +291,33 @@ void BPlusTree<T>::fix_excess(int index) {
     array::split(node->data, node->data_size, split->data, split->data_size);
     array::split(node->subset, node->subset_size, split->subset,
                  split->subset_size);
+
+    // connect the nodes together
+    split->next = node->next;
+    node->next = split;
+
     // insert the last item into self
     T item = array::detach_item(node->data, node->data_size);
     array::ordered_insert(data, data_size, item);
-    array::insert_item(subset, index + 1, subset_size, split); 
+    array::insert_item(subset, index + 1, subset_size, split);
+
+    // insert the item into the new node
+    if (split->is_leaf())
+        array::ordered_insert(split->data, split->data_size, item);
 }
 
 template <typename T>
 const T& BPlusTree<T>::get(const T& entry) const {
-    int index = array::first_ge(data, data_size, entry);
-    if (data[index] == entry)
+    size_t index = array::first_ge(data, data_size, entry);
+    bool found = index < data_size && data[index] == entry;
+    if (found && is_leaf())
         return data[index];
-    if (data[index] != entry && subset[index] == nullptr)
+    else if (found && !is_leaf())
+        return subset[i + 1]->find(entry);
+    else if (!found && !is_leaf())
+        return subset[i]->find(entry);
+    else if (!found && is_leaf())
         throw std::out_of_range("Item not in tree");
-    else {
-        return subset[index]->get(entry);
-    }
 }
 
 template <typename T>
@@ -263,20 +331,15 @@ T& BPlusTree<T>::get(const T& entry) {
 template <typename T>
 T* BPlusTree<T>::find(const T& entry) {
     size_t index = array::first_ge(data, data_size, entry);
-
-    size_t found = (index < data_size && data[index] == entry);
-
-    // Returns the pointer to the item
-    if (found)
-        return &data[index];
-
-    // Returns a null pointer if it cant be found
-    if (is_leaf() || subset[index] == nullptr) {
+    bool found = index < data_size && data[index] == entry;
+    if (found && is_leaf())
+        return data[index];
+    else if (found && !is_leaf())
+        return subset[i + 1]->find(entry);
+    else if (!found && !is_leaf())
+        return subset[i]->find(entry);
+    else if (!found && is_leaf())
         return nullptr;
-    }
-    if (!found) // yet...
-        return subset[index]->find(entry);
-    return nullptr;
 }
 template <typename T>
 bool BPlusTree<T>::contains(const T& entry) const {
@@ -454,4 +517,46 @@ void BPlusTree<T>::fix_shortage(int index) {
         // merge them
         merge_with_next_subset(index);
     }
+}
+
+template <typename T>
+BPlusTree<T>* BPlusTree<T>::get_smallest_node() {
+    BPlusTree<T>* smallest = this;
+    while (!smallest->is_leaf()) {
+        smallest = smallest->subset[0];
+    }
+    return smallest;
+}
+template <typename T>
+void BPlusTree<T>::print_as_linked(std::ostream& outs) {
+    BPlusTree<T>* current_node = get_smallest_node();
+    while (current_node != nullptr) {
+        array::print_array(current_node->data, current_node->data_size, 0, outs);
+        outs << " -> ";
+        current_node = current_node->next;
+    }
+    outs << " |||";
+}
+template <typename T>
+void BPlusTree<T>::print_as_list(std::ostream& outs) {
+    // BPlusTree<T>* current_node = get_smallest_node();
+    // while (current_node != nullptr) {
+    //     for (size_t i = 0; i < current_node->data_size; i++) {
+    //         outs << current_node->data[i] << std::endl;
+    //     }
+    //     current_node = current_node->next;
+    // }
+    for (auto it = begin(); it != end(); it++) {
+        outs << *it << std::endl;
+    }
+}
+
+template <typename T>
+typename BPlusTree<T>::Iterator BPlusTree<T>::begin() {
+    return Iterator(get_smallest_node());
+}
+
+template <typename T>
+typename BPlusTree<T>::Iterator BPlusTree<T>::end() {
+    return Iterator(nullptr);
 }

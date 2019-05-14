@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <stdexcept>
+
 // it's like an array, but it has bounds checking
 template <typename T>
 class Array {
@@ -18,7 +19,6 @@ public:
 
     // bounds checked element access, throws std::out_of_range
     T& operator[](size_t index) const;
-
 
     // prints the entire array
     friend std::ostream& operator<<(std::ostream& outs, const Array<T>& a) {

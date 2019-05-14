@@ -65,6 +65,10 @@ void interactive_test(T& tree) {
                 std::cout << "invalid input" << std::endl;
         }
         std::cout << tree;
+        tree.print_as_linked();
+        std::cout << std::endl;
+        tree.print_as_list();
+        std::cout << std::endl;
     }
 }
-} // namespace BTree_test
+} // namespace b_plus_tree_test
