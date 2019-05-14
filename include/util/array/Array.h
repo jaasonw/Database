@@ -1,6 +1,6 @@
 #pragma once
+#include <iostream>
 #include <stdexcept>
-
 // it's like an array, but it has bounds checking
 template <typename T>
 class Array {
@@ -20,6 +20,16 @@ public:
 
     // copy src[] into self
     void copy_from_array(const T* src, size_t src_size);
+
+    // prints the entire array
+    friend std::ostream& operator<<(std::ostream& outs, const Array<T>& a) {
+        outs << '[' << ' ';
+        for (size_t i = 0; i < a.capacity; i++) {
+            outs << a[i] << " ";
+        }
+        outs << ' ' << ']';
+        return outs;
+    }
 };
 
 template <typename T>
