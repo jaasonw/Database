@@ -17,8 +17,13 @@ int main(int argc, char const* argv[]) {
     // b_plus_tree_big_three::test_copy_constructor();
     // b_plus_tree_big_three::test_delete();
 
-    BPlusTree<int> tree;
-    b_plus_tree_test::interactive_test(tree);
+    // BPlusTree<int> tree;
+    // b_plus_tree_test::interactive_test(tree);
+    auto a = Array<BPlusTree<int>*>(10);
+    a[0] = new BPlusTree<int>();
+    a[1] = nullptr;
+    cout << a;
+    // array::print_array(a, 10);
 
     cout << endl;
     system("pause");

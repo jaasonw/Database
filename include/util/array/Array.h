@@ -7,7 +7,8 @@ class Array {
 private:
     T* data = nullptr;
     size_t capacity;
-
+    // copy src[] into self
+    void copy_from_array(const T* src, size_t src_size);
 public:
     Array() : data() {}
     Array(size_t size);
@@ -18,8 +19,6 @@ public:
     // bounds checked element access, throws std::out_of_range
     T& operator[](size_t index) const;
 
-    // copy src[] into self
-    void copy_from_array(const T* src, size_t src_size);
 
     // prints the entire array
     friend std::ostream& operator<<(std::ostream& outs, const Array<T>& a) {
@@ -62,6 +61,9 @@ T& Array<T>::operator[](size_t index) const {
 
 template <typename T>
 void Array<T>::copy_from_array(const T* src, size_t src_size) {
+    capacity = src_size;
+    delete[] data;
+    data = new T[capacity]();
     for (size_t i = 0; i < src_size; i++) {
         data[i] = src[i];
     }
