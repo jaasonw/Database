@@ -1,5 +1,5 @@
 #pragma once
-#include <exception>
+#include <stdexcept>
 
 // it's like an array, but it has bounds checking
 template <typename T>
@@ -7,6 +7,7 @@ class Array {
 private:
     T* data = nullptr;
     size_t capacity;
+
 public:
     Array() : data() {}
     Array(size_t size);
@@ -17,7 +18,6 @@ public:
     T& operator[](int index) const;
 
     // copy src[] into self
-    template <typename T>
     void copy_from_array(const T* src, size_t src_size) {
         capacity = src_size;
         delete[] data;
