@@ -1,7 +1,6 @@
 #pragma once
-#include "fake_array/FakeArray.h"
-#include "fake_array/fake_array_util.h"
-// #include "array_util.h"
+#include "util/array/Array.h"
+#include "util/array/array_util.h"
 #include <cassert>
 #include <exception>
 #include <iostream>
@@ -25,16 +24,10 @@ private:
     static const size_t SUBSET_CAPACITY = MAXIMUM + 2;
 
     // holds the keys
-    FakeArray<T> data = FakeArray<T>(DATA_CAPACITY);
+    Array<T> data = Array<T>(DATA_CAPACITY);
 
     // subtrees
-    FakeArray<BPlusTree*> subset = FakeArray<BPlusTree*>(SUBSET_CAPACITY);
-
-    // // holds the keys
-    // T data[DATA_CAPACITY] = {T()};
-    // // subtrees
-    // BPlusTree* subset[SUBSET_CAPACITY] = {nullptr};
-    
+    Array<BPlusTree*> subset = Array<BPlusTree*>(SUBSET_CAPACITY);
     
     // true if duplicate keys may be inserted
     bool duplicates_allowed;
@@ -141,7 +134,7 @@ void BPlusTree<T>::clear_tree() {
 template <typename T>
 void BPlusTree<T>::copy_tree(const BPlusTree<T>& other) {
     // copy data
-    f_array::copy_array(other.data, data, other.data_size, data_size);
+    array::copy_array(other.data, data, other.data_size, data_size);
     duplicates_allowed = other.duplicates_allowed;
     subset_size = other.subset_size;
     for (size_t i = 0; i < other.subset_size; i++) {
@@ -161,14 +154,14 @@ void BPlusTree<T>::print_tree(std::ostream& outs, int level) const {\
             if (subset[i] != nullptr)
                 subset[i]->print_tree(outs, level + 1);
             else {
-                f_array::print_array(data, 0, level + 1, outs);
+                array::print_array(data, 0, level + 1, outs);
                 outs << std::endl;
             }
         }
     }
 
     // print the parent dataset
-    f_array::print_array(data, data_size, level, outs);
+    array::print_array(data, data_size, level, outs);
     outs << std::endl;
 
     if (subset_size > 1) {
@@ -177,7 +170,7 @@ void BPlusTree<T>::print_tree(std::ostream& outs, int level) const {\
             if (subset[i] != nullptr)
                 subset[i]->print_tree(outs, level + 1);
             else {
-                f_array::print_array(data, 0, level + 1, outs);
+                array::print_array(data, 0, level + 1, outs);
                 outs << std::endl;
             }
         }
@@ -197,12 +190,12 @@ void BPlusTree<T>::loose_insert(const T& entry) {
     }
     
     // it's not here, put it somewhere
-    int index = f_array::first_ge(data, data_size, entry);
+    int index = array::first_ge(data, data_size, entry);
     if (!is_leaf() && data[index] != entry)
         subset[index]->loose_insert(entry);
     else {
         if (data[index] != entry)
-            f_array::insert_item(data, index, data_size, entry);
+            array::insert_item(data, index, data_size, entry);
         return;
     }
     if (subset[index]->data_size > MAXIMUM) {
@@ -218,8 +211,8 @@ void BPlusTree<T>::insert(const T& entry) {
         // create new temp node
         BPlusTree<T>* temp = new BPlusTree<T>(duplicates_allowed);
         // copy data to temp node
-        f_array::copy_array(data, temp->data, data_size, temp->data_size);
-        f_array::copy_array(subset, temp->subset, subset_size, temp->subset_size);
+        array::copy_array(data, temp->data, data_size, temp->data_size);
+        array::copy_array(subset, temp->subset, subset_size, temp->subset_size);
         // wipe root data
         erase_node();
         // point root to temp
@@ -238,18 +231,18 @@ void BPlusTree<T>::fix_excess(int index) {
         return;
     BPlusTree<T>* split = new BPlusTree<T>(duplicates_allowed);
     // split data and child
-    f_array::split(node->data, node->data_size, split->data, split->data_size);
-    f_array::split(node->subset, node->subset_size, split->subset,
+    array::split(node->data, node->data_size, split->data, split->data_size);
+    array::split(node->subset, node->subset_size, split->subset,
                  split->subset_size);
     // insert the last item into self
-    T item = f_array::detach_item(node->data, node->data_size);
-    f_array::ordered_insert(data, data_size, item);
-    f_array::insert_item(subset, index + 1, subset_size, split); 
+    T item = array::detach_item(node->data, node->data_size);
+    array::ordered_insert(data, data_size, item);
+    array::insert_item(subset, index + 1, subset_size, split); 
 }
 
 template <typename T>
 const T& BPlusTree<T>::get(const T& entry) const {
-    int index = f_array::first_ge(data, data_size, entry);
+    int index = array::first_ge(data, data_size, entry);
     if (data[index] == entry)
         return data[index];
     if (data[index] != entry && subset[index] == nullptr)
@@ -269,7 +262,7 @@ T& BPlusTree<T>::get(const T& entry) {
 
 template <typename T>
 T* BPlusTree<T>::find(const T& entry) {
-    size_t index = f_array::first_ge(data, data_size, entry);
+    size_t index = array::first_ge(data, data_size, entry);
 
     size_t found = (index < data_size && data[index] == entry);
 
@@ -287,7 +280,7 @@ T* BPlusTree<T>::find(const T& entry) {
 }
 template <typename T>
 bool BPlusTree<T>::contains(const T& entry) const {
-    return data[f_array::first_ge(data, data_size, entry)] == entry;
+    return data[array::first_ge(data, data_size, entry)] == entry;
 }
 template <typename T>
 void BPlusTree<T>::rotate_left(int i) {
@@ -295,19 +288,19 @@ void BPlusTree<T>::rotate_left(int i) {
         subset[i] = new BPlusTree<T>(duplicates_allowed);
         subset_size++;
     }
-    f_array::attach_item(subset[i]->data, subset[i]->data_size, data[i]);
+    array::attach_item(subset[i]->data, subset[i]->data_size, data[i]);
     
     // guard rails to make sure im not rotating the wrong way
     assert(subset[i + 1] != nullptr);
-    data[i] = f_array::delete_item(subset[i + 1]->data, 0, subset[i + 1]->data_size);
+    data[i] = array::delete_item(subset[i + 1]->data, 0, subset[i + 1]->data_size);
 
     // rotate subset pointers, if there actually are any pointers to rotate
     if (subset[i + 1]->subset_size > 0) {
         if (subset[i + 1]->subset[0] != nullptr) {
-            f_array::attach_item(
+            array::attach_item(
                 subset[i]->subset,
                 subset[i]->subset_size,
-                f_array::delete_item(subset[i + 1]->subset, 0, subset[i + 1]->subset_size)
+                array::delete_item(subset[i + 1]->subset, 0, subset[i + 1]->subset_size)
             );
 
         }
@@ -320,19 +313,19 @@ void BPlusTree<T>::rotate_right(int i) {
         subset[i + 1] = new BPlusTree<T>(duplicates_allowed);
         subset_size++;
     }
-    f_array::insert_item(subset[i + 1]->data, 0, subset[i + 1]->data_size, data[i]);
+    array::insert_item(subset[i + 1]->data, 0, subset[i + 1]->data_size, data[i]);
 
     assert(subset[i] != nullptr);
-    data[i] = f_array::detach_item(subset[i]->data, subset[i]->data_size);
+    data[i] = array::detach_item(subset[i]->data, subset[i]->data_size);
 
     // rotate subset pointers, if there actually are any pointers to rotate
     if (subset[i]->subset_size > 0) {
         if (subset[i]->subset[subset[i]->subset_size - 1] != nullptr) {
-            f_array::insert_item(
+            array::insert_item(
                 subset[i + 1]->subset,
                 0,
                 subset[i + 1]->subset_size,
-                f_array::detach_item(subset[i]->subset, subset[i]->subset_size)
+                array::detach_item(subset[i]->subset, subset[i]->subset_size)
             );
         }
     }
@@ -354,14 +347,14 @@ void BPlusTree<T>::erase_node() {
 template <typename T>
 void BPlusTree<T>::merge_with_next_subset(int i) {
     assert(i + 1 < subset_size);
-    f_array::merge(subset[i]->data, subset[i + 1]->data, subset[i]->data_size,
+    array::merge(subset[i]->data, subset[i + 1]->data, subset[i]->data_size,
                  subset[i + 1]->data_size);
-    f_array::merge(subset[i]->subset, subset[i + 1]->subset,
+    array::merge(subset[i]->subset, subset[i + 1]->subset,
                  subset[i]->subset_size, subset[i + 1]->subset_size);
     // make sure we arent deleting its children too
     subset[i + 1]->erase_node();
     delete subset[i + 1];
-    f_array::delete_item(subset, i + 1, subset_size);
+    array::delete_item(subset, i + 1, subset_size);
 }
 
 template <typename T>
@@ -371,8 +364,8 @@ void BPlusTree<T>::remove(const T& entry) {
     if (data_size < MINIMUM && subset_size > 0) {
         auto shrink_ptr = subset[0];
         subset[0] = nullptr;
-        f_array::copy_array(shrink_ptr->data, data, shrink_ptr->data_size, data_size);
-        f_array::copy_array(shrink_ptr->subset, subset, shrink_ptr->subset_size, subset_size);
+        array::copy_array(shrink_ptr->data, data, shrink_ptr->data_size, data_size);
+        array::copy_array(shrink_ptr->subset, subset, shrink_ptr->subset_size, subset_size);
 
         shrink_ptr->erase_node();
         delete shrink_ptr;
@@ -381,7 +374,7 @@ void BPlusTree<T>::remove(const T& entry) {
 
 template <typename T>
 void BPlusTree<T>::loose_remove(const T& entry) {
-    size_t index = f_array::first_ge(data, data_size, entry);
+    size_t index = array::first_ge(data, data_size, entry);
     if (!is_leaf()) {
         if (index < data_size && data[index] == entry) {
             // replace item with largest child on the left
@@ -395,7 +388,7 @@ void BPlusTree<T>::loose_remove(const T& entry) {
         }
     } else {
         if (data[index] == entry) {
-            f_array::delete_item(data, index, data_size);
+            array::delete_item(data, index, data_size);
             return;
         } else {
             throw std::out_of_range("Item not in tree");
@@ -410,14 +403,14 @@ void BPlusTree<T>::loose_remove(const T& entry) {
 template <typename T>
 T BPlusTree<T>::remove_biggest() {
     if (is_leaf()) {
-        return f_array::detach_item(data, data_size);
+        return array::detach_item(data, data_size);
     }
     T item = subset[subset_size - 1]->remove_biggest();
     // make sure to get rid of the node we just pulled from it if it's empty
     if (subset[subset_size - 1]->data_size <= 0) {
         // delete subset[subset_size - 1];
         // subset[subset_size - 1] = nullptr;
-        delete f_array::detach_item(subset, subset_size);
+        delete array::detach_item(subset, subset_size);
     }
     fix_shortage(data_size - 1);
     return item;
@@ -451,13 +444,13 @@ void BPlusTree<T>::fix_shortage(int index) {
     // case 2: we dont have siblings to borrow from
     else {
         // move the root down to right
-        T item = f_array::delete_item(data, index, data_size);
+        T item = array::delete_item(data, index, data_size);
         if (right == nullptr) {
             auto temp = new BPlusTree<T>(duplicates_allowed);
-            f_array::insert_item(subset, index + 1, subset_size, temp);
+            array::insert_item(subset, index + 1, subset_size, temp);
             right = subset[index + 1];
         }
-        f_array::ordered_insert(right->data, right->data_size, item);
+        array::ordered_insert(right->data, right->data_size, item);
         // merge them
         merge_with_next_subset(index);
     }
