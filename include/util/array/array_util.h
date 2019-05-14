@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-// array functions but they use FakeArrays
 namespace array {
 // return the larger of the two items
 template <typename T>
@@ -112,7 +111,8 @@ void split(Array<T>& data1, size_t& size1, Array<T>& data2, size_t& size2) {
 
 // copy src[] into dest[]
 template <typename T>
-void copy_array(const Array<T>& src, Array<T>& dest, size_t src_size, size_t& dest_size) {
+void copy_array(const Array<T>& src, Array<T>& dest, size_t src_size,
+                size_t& dest_size) {
     for (size_t i = 0; i < src_size; i++) {
         dest[i] = src[i];
     }
@@ -162,15 +162,15 @@ bool is_le(const Array<T>& data, size_t size, const T& item) {
 } // namespace array
 
 //-------------- Vector Extra operators: ---------------------
-// // print vector list
-// template <typename T>
-// std::ostream& operator<<(std::ostream& outs, const std::vector<T>& list) {
-//     array::print_array(&list[0], list.size(), 0, outs);
-//     return outs;
-// }
+// print vector list
+template <typename T>
+std::ostream& operator<<(std::ostream& outs, const std::vector<T>& list) {
+    array::print_array(&list[0], list.size(), 0, outs);
+    return outs;
+}
 
-// // list.push_back item
-// template <typename T>
-// std::vector<T>& operator+=(std::vector<T>& list, const T& item) {
-//     list.push_back(item);
-// }
+// list.push_back item
+template <typename T>
+std::vector<T>& operator+=(std::vector<T>& list, const T& item) {
+    list.push_back(item);
+}
