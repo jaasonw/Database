@@ -15,17 +15,11 @@ public:
     ~Array() { delete[] data; }
     Array<T>& operator=(const Array<T>& other);
 
-    T& operator[](int index) const;
+    // bounds checked element access, throws std::out_of_range
+    T& operator[](size_t index) const;
 
     // copy src[] into self
-    void copy_from_array(const T* src, size_t src_size) {
-        capacity = src_size;
-        delete[] data;
-        data = new T[capacity]();
-        for (size_t i = 0; i < src_size; i++) {
-            data[i] = src[i];
-        }
-    }
+    void copy_from_array(const T* src, size_t src_size);
 };
 
 template <typename T>
@@ -49,9 +43,19 @@ Array<T>::Array(const Array<T>& other) {
 }
 
 template <typename T>
-T& Array<T>::operator[](int index) const {
+T& Array<T>::operator[](size_t index) const {
     if (index >= capacity || index < 0)
         throw std::out_of_range("Out of range");
     else
         return data[index];
+}
+
+template <typename T>
+void Array<T>::copy_from_array(const T* src, size_t src_size) {
+    capacity = src_size;
+    delete[] data;
+    data = new T[capacity]();
+    for (size_t i = 0; i < src_size; i++) {
+        data[i] = src[i];
+    }
 }
