@@ -539,13 +539,6 @@ void BPlusTree<T>::print_as_linked(std::ostream& outs) {
 }
 template <typename T>
 void BPlusTree<T>::print_as_list(std::ostream& outs) {
-    // BPlusTree<T>* current_node = get_smallest_node();
-    // while (current_node != nullptr) {
-    //     for (size_t i = 0; i < current_node->data_size; i++) {
-    //         outs << current_node->data[i] << std::endl;
-    //     }
-    //     current_node = current_node->next;
-    // }
     for (auto it = begin(); it != end(); it++) {
         outs << *it << std::endl;
     }
