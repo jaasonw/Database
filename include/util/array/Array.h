@@ -62,9 +62,6 @@ T& Array<T>::operator[](size_t index) const {
 
 template <typename T>
 void Array<T>::copy_from_array(const T* src, size_t src_size) {
-    capacity = src_size;
-    delete[] data;
-    data = new T[capacity]();
     for (size_t i = 0; i < src_size; i++) {
         data[i] = src[i];
     }
