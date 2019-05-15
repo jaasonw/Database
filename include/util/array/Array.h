@@ -3,6 +3,7 @@
 #include <stdexcept>
 
 // it's like an array, but it has bounds checking
+namespace b_array {
 template <typename T>
 class Array {
 private:
@@ -10,8 +11,10 @@ private:
     size_t capacity;
     // copy src[] into self
     void copy_from_array(const T* src, size_t src_size);
+
 public:
-    Array() : data() {}
+    Array() : data(){};
+    Array(const T& item);
     Array(size_t size);
     Array(const Array<T>& other);
     ~Array() { delete[] data; }
@@ -31,6 +34,12 @@ public:
     }
 };
 
+template <typename T>
+Array<T>::Array(const T& item) {
+    capacity = 1;
+    data = new T[1]();
+    data[0] = item;
+}
 template <typename T>
 Array<T>::Array(size_t size) {
     capacity = size;
@@ -68,3 +77,4 @@ void Array<T>::copy_from_array(const T* src, size_t src_size) {
         data[i] = src[i];
     }
 }
+} // namespace b_array
