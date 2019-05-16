@@ -9,7 +9,7 @@ template <typename T>
 void interactive_test(T& tree) {
     while (true) {
         char input;
-        std::cout << "[R]andom [G]enerate [I]nsert [D]elete [C]lear  [S]earch  "
+        std::cout << "[R]andom [G]enerate [I]nsert [B]egin [E]nd [D]elete [C]lear  [S]earch  "
                      " e[X]it: ";
         std::cin >> input;
         switch (tolower(input)) {
@@ -53,22 +53,28 @@ void interactive_test(T& tree) {
             case 's': {
                 int input;
                 std::cin >> input;
-                if (tree.find(input))
+                if (tree.search(input) != nullptr)
                     std::cout << "found" << std::endl;
                 else
                     std::cout << "not found" << std::endl;
                 break;
             }
+            case 'b':
+                std::cout<< "Smallest: " << *(tree.begin()) << std::endl;
+                break;
+            case 'e':
+                std::cout << "Largest: " << *(tree.end()) << std::endl;
+                break;
             case 'x':
                 return;
             default:
                 std::cout << "invalid input" << std::endl;
         }
         std::cout << tree;
-        tree.print_as_linked();
-        std::cout << std::endl;
-        tree.print_as_list();
-        std::cout << std::endl;
+        // tree.print_as_linked();
+        // std::cout << std::endl;
+        // tree.print_as_list();
+        // std::cout << std::endl;
     }
 }
 } // namespace b_plus_tree_test

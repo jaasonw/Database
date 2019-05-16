@@ -165,7 +165,7 @@ bool is_le(const b_array::Array<T>& data, size_t size, const T& item) {
 // print vector list
 template <typename T>
 std::ostream& operator<<(std::ostream& outs, const std::vector<T>& list) {
-    array::print_array(&list[0], list.size(), 0, outs);
+    b_array::print_array(&list[0], list.size(), 0, outs);
     return outs;
 }
 
