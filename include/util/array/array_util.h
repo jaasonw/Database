@@ -73,6 +73,7 @@ void attach_item(b_array::Array<T>& data, size_t& size, const T& entry) {
 // remove the last element in data and place it in entry
 template <typename T>
 T detach_item(b_array::Array<T>& data, size_t& size) {
+    assert(size > 0);
     T item = data[size - 1];
     data[size] = T();
     data[--size] = T();
@@ -82,6 +83,7 @@ T detach_item(b_array::Array<T>& data, size_t& size) {
 // delete item at index i and return it, shifts array
 template <typename T>
 T delete_item(b_array::Array<T>& data, int index, size_t& size) {
+    assert(size > 0);
     T item = data[index];
     for (size_t i = index; i < size - 1; i++) {
         data[i] = data[i + 1];
