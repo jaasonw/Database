@@ -160,17 +160,3 @@ bool is_le(const b_array::Array<T>& data, size_t size, const T& item) {
 }
 
 } // namespace b_array
-
-//-------------- Vector Extra operators: ---------------------
-// print vector list
-template <typename T>
-std::ostream& operator<<(std::ostream& outs, const std::vector<T>& list) {
-    b_array::print_array(&list[0], list.size(), 0, outs);
-    return outs;
-}
-
-// list.push_back item
-template <typename T>
-std::vector<T>& operator+=(std::vector<T>& list, const T& item) {
-    list.push_back(item);
-}
