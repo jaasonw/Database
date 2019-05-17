@@ -7,6 +7,7 @@
 #include "BPlusTree.h"
 #include "test/tree_test.h"
 #include "test/three_test.h"
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -22,13 +23,19 @@ int main(int argc, char const* argv[]) {
         b_plus_tree_test::interactive_test(tree);
 
     } catch (const std::exception& e) {
+        // some sort of exception was called, catch it and dump it in a file
+        string filename = "tree_dump.txt";
+        cerr << "Uh oh, something wasn't right, tree has been dumped in: "
+             << filename << endl;
+        cerr << "Error: ";
         cerr << e.what() << endl;
+        ofstream tree_dump;
+        tree_dump.open("tree_dump.txt");
+        tree.print_as_tree_debug(tree_dump);
+        tree_dump.close();
+        cerr << "Events: " << endl;
+        tree.print_event_log(cerr);
     }
-    // auto a = Array<BPlusTree<int>*>(10);
-    // a[0] = new BPlusTree<int>();
-    // a[1] = nullptr;
-    // cout << a;
-    // array::print_array(a, 10);
 
     cout << endl;
     system("pause");

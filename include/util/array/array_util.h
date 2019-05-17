@@ -1,6 +1,7 @@
 #pragma once
 #include "Array.h"
 #include "util/level.h"
+#include <cassert>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -125,8 +126,8 @@ void copy_array(const b_array::Array<T>& src, b_array::Array<T>& dest, size_t sr
 // print array data
 template <typename T>
 void print_array(const b_array::Array<T>& data, size_t size, int level = 0,
-                 std::ostream& outs = std::cout) {
-    outs << level::create_space(level);
+                 std::ostream& outs = std::cout, size_t spacing_size = 8) {
+    outs << level::create_space(level, spacing_size);
     outs << '[' << ' ';
     for (size_t i = 0; i < size; i++) {
         outs << data[i] << " ";

@@ -5,10 +5,15 @@
 #include <exception>
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <vector>
 
 template <typename T>
 class BPlusTree {
 private:
+    // keep a log of inputs and outputs used to recreate a tree
+    std::vector<std::string> event_log;
+
     static const int MAXIMUM = 2;
     static const int MINIMUM = MAXIMUM / 2;
 
@@ -60,6 +65,12 @@ private:
     // zeros out the node
     void erase_node();
 
+    // we do need these though
+    // transfer beginning of left subset to the end of right subset
+    void transfer_left(int i);
+    // transfer the end of the left subset to the beginning of the right
+    void transfer_right(int i);
+
     // return a const reference to entry in the tree
     const T& get(const T& entry) const;
     // return a reference to entry in the tree
@@ -82,7 +93,7 @@ public:
 
         T operator*() {
             if (offset < node_ptr->data_size)
-                throw std::invalid_argument();
+                throw std::invalid_argument("iterator is empty");
             return node_ptr->data[offset];
         }
         T* operator->() {
@@ -162,7 +173,7 @@ public:
     // true if the tree is empty
     bool empty() const;
 
-    //print a readable version of the tree
+    // print a readable version of the tree
     void print_as_tree(std::ostream& outs = std::cout, int level = 0) const;
 
     BPlusTree<T>* get_smallest_node();
@@ -178,6 +189,12 @@ public:
     // Iterators
     Iterator begin();
     Iterator end();
+
+    // DEBUG STUFF
+    // prints a tree with all he pointers and data 
+    void print_as_tree_debug(std::ostream& outs = std::cout, int level = 0) const;
+    // prints the events in the event log
+    void print_event_log(std::ostream& outs = std::cout) const;
 };
 
 template <typename T>
@@ -229,7 +246,14 @@ void BPlusTree<T>::copy_tree(const BPlusTree<T>& other) {
 }
 
 template <typename T>
-void BPlusTree<T>::print_as_tree(std::ostream& outs, int level) const {\
+void BPlusTree<T>::print_event_log(std::ostream& outs) const {
+    for (size_t i = 0; i < event_log.size(); i++) {
+        outs << event_log[i] << std::endl;
+    }
+}
+
+template <typename T>
+void BPlusTree<T>::print_as_tree(std::ostream& outs, int level) const {
     // if not leaf keep recursioning down until it is
     if (subset_size > 1) {
         // print half of the subset backwards
@@ -244,19 +268,7 @@ void BPlusTree<T>::print_as_tree(std::ostream& outs, int level) const {\
     }
 
     // print the parent dataset
-    // format
-    // current address
-    // data
-    // subset pointers
-    // next pointer (if leaf)
-    outs << level::create_space(level) << "[ " << this << " ]" << std::endl;
     b_array::print_array(data, data_size, level, outs);
-    outs << std::endl;
-    b_array::print_array(subset, subset_size, level, outs);
-    outs << std::endl;
-    if (is_leaf()) {
-        outs << level::create_space(level) << "[ " << next << " ]" << std::endl;
-    }
     outs << std::endl;
     
 
@@ -267,6 +279,63 @@ void BPlusTree<T>::print_as_tree(std::ostream& outs, int level) const {\
                 subset[i]->print_as_tree(outs, level + 1);
             else {
                 b_array::print_array(data, 0, level + 1, outs);
+                outs << std::endl;
+            }
+        }
+    }
+}
+template <typename T>
+void BPlusTree<T>::print_as_tree_debug(std::ostream& outs, int level) const {\
+    // if not leaf keep recursioning down until it is
+    if (subset_size > 1) {
+        // print half of the subset backwards
+        for (size_t i = subset_size - 1; i >= subset_size / 2; i--) {
+            if (subset[i] != nullptr)
+                subset[i]->print_as_tree_debug(outs, level + 1);
+            else {
+                outs << level::create_space(level, 32) << "[ " << this << " ]" << std::endl;
+                b_array::print_array(data, data_size, level + 1, outs, 32);
+                outs << std::endl;
+                b_array::print_array(subset, subset_size, level + 1, outs, 32);
+                outs << std::endl;
+                if (is_leaf()) {
+                    outs << level::create_space(level, 32) << "[ " << next << " ]" << std::endl;
+                }
+                outs << std::endl;
+            }
+        }
+    }
+
+    // print the parent dataset
+    // format
+    // current address
+    // data
+    // subset pointers
+    // next pointer (if leaf)
+    outs << level::create_space(level, 32) << "[ " << this << " ]" << std::endl;
+    b_array::print_array(data, data_size, level, outs, 32);
+    outs << std::endl;
+    b_array::print_array(subset, subset_size, level, outs, 32);
+    outs << std::endl;
+    if (is_leaf()) {
+        outs << level::create_space(level, 32) << "[ " << next << " ]" << std::endl;
+    }
+    outs << std::endl;
+
+    if (subset_size > 1) {
+        // print the other half
+        for (int i = (subset_size / 2) - 1; i >= 0; i--) {
+            if (subset[i] != nullptr)
+                subset[i]->print_as_tree_debug(outs, level + 1);
+            else {
+                outs << level::create_space(level, 32) << "[ " << this << " ]" << std::endl;
+                b_array::print_array(data, data_size, level + 1, outs, 32);
+                outs << std::endl;
+                b_array::print_array(subset, subset_size, level + 1, outs, 32);
+                outs << std::endl;
+                if (is_leaf()) {
+                    outs << level::create_space(level, 32) << "[ " << next << " ]" << std::endl;
+                }
                 outs << std::endl;
             }
         }
@@ -300,6 +369,12 @@ void BPlusTree<T>::loose_insert(const T& entry) {
 }
 template <typename T>
 void BPlusTree<T>::insert(const T& entry) {
+
+    // Log event
+    std::stringstream event;
+    event << "Inserting: " << entry;
+    event_log.push_back(event.str());
+
     // the function that called this has to be root
     loose_insert(entry);
     // so do root checks here
@@ -461,6 +536,12 @@ void BPlusTree<T>::merge_with_next_subset(int i) {
 
 template <typename T>
 void BPlusTree<T>::remove(const T& entry) {
+
+    // Log event
+    std::stringstream event;
+    event << "Removing: " << entry;
+    event_log.push_back(event.str());
+
     // the function that called this has to be root
     loose_remove(entry);
     if (data_size < MINIMUM && subset_size > 0) {
@@ -614,4 +695,30 @@ typename BPlusTree<T>::Iterator BPlusTree<T>::search(const T& entry) {
         return subset[index]->search(entry);
     else if (!found && is_leaf())
         return Iterator(nullptr);
+}
+
+template <typename T>
+void BPlusTree<T>::transfer_left(int i) {
+    assert(i < 0);
+    b_array::attach_item(
+        subset[i - 1]->data,
+        subset[i - 1]->data_size,
+        b_array::delete_item(subset[i]->data, 0, subset[i]->data_size)
+    );
+
+    // transfer the subset pointers, if there's any subset to shift
+    if (subset[i]->subset_size > 0) {
+        b_array::attach_item(
+            subset[i - 1]->subset,
+            subset[i - 1]->subset_size,
+            b_array::delete_item(subset[i]->subset, 0, subset[i]->subset_size)
+        );
+
+    }
+}
+
+template <typename T>
+void BPlusTree<T>::transfer_right(int i) {
+    assert(i > data_size);
+    
 }

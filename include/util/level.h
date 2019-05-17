@@ -2,8 +2,7 @@
 #include <string>
 
 namespace level {
-const int SPACING = 32;
-std::string create_space(size_t size) {
-    return std::string(size * SPACING, ' ').c_str();
+std::string create_space(size_t size, size_t space = 8) {
+    return std::string(size * space, ' ').c_str();
 }
 }
