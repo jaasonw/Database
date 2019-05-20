@@ -48,7 +48,7 @@ private:
 
     // remove element functions:
     // allows MINIMUM-1 data elements in the root
-    void loose_remove(const T& entry);
+    void loose_remove(const T& entry, BPlusTree<T>* origin = nullptr, int offset = 0);
     // fix shortage of data elements in child i
     void fix_shortage(int i);
 
@@ -138,10 +138,10 @@ public:
             return *(left.node_ptr) != right;
         }
         // compare to null
-        friend bool operator==(const Iterator& left, std::nullptr_t null) {
+        friend bool operator==(const Iterator& left, std::nullptr_t) {
             return left.node_ptr == nullptr;
         }
-        friend bool operator!=(const Iterator& left, std::nullptr_t null) {
+        friend bool operator!=(const Iterator& left, std::nullptr_t) {
             return left.node_ptr != nullptr;
         }
         bool is_null() { return !node_ptr; }
@@ -285,7 +285,7 @@ void BPlusTree<T>::print_as_tree(std::ostream& outs, int level) const {
     }
 }
 template <typename T>
-void BPlusTree<T>::print_as_tree_debug(std::ostream& outs, int level) const {\
+void BPlusTree<T>::print_as_tree_debug(std::ostream& outs, int level) const {
     // if not leaf keep recursioning down until it is
     if (subset_size > 1) {
         // print half of the subset backwards
@@ -454,6 +454,7 @@ T* BPlusTree<T>::find(const T& entry) {
         return subset[index]->find(entry);
     else if (!found && is_leaf())
         return nullptr;
+    return nullptr;
 }
 template <typename T>
 bool BPlusTree<T>::contains(const T& entry) const {
@@ -511,7 +512,7 @@ void BPlusTree<T>::rotate_right(int i) {
 template <typename T>
 void BPlusTree<T>::erase_node() {
     data_size = 0;
-    
+    next = nullptr;
     subset_size = 0;
     // null out the subset array before it causes problems
     for (size_t i = 0; i < SUBSET_CAPACITY; i++) {
@@ -528,6 +529,8 @@ void BPlusTree<T>::merge_with_next_subset(int i) {
                  subset[i + 1]->data_size);
     b_array::merge(subset[i]->subset, subset[i + 1]->subset,
                  subset[i]->subset_size, subset[i + 1]->subset_size);
+    // update the next
+    subset[i]->next = subset[i + 1]->next;
     // make sure we arent deleting its children too
     subset[i + 1]->erase_node();
     delete subset[i + 1];
@@ -556,31 +559,38 @@ void BPlusTree<T>::remove(const T& entry) {
 }
 
 template <typename T>
-void BPlusTree<T>::loose_remove(const T& entry) {
+void BPlusTree<T>::loose_remove(const T& entry, BPlusTree<T>* origin, int offset) {
     size_t index = b_array::first_ge(data, data_size, entry);
-    if (!is_leaf()) {
-        if (index < data_size && data[index] == entry) {
-            // replace item with largest child on the left
-            data[index] = subset[index]->remove_biggest();
-            fix_shortage(index);
-        } else {
-            subset[index]->loose_remove(entry);
-            if (index == data_size)
-                index--;
-            fix_shortage(index);
+    bool found = index < data_size && data[index] == entry;
+
+    if (found && is_leaf()) {
+        // remove the actual item
+        b_array::delete_item(data, index, data_size);
+        if (origin != nullptr && next != nullptr) {
+            if (data_size > 0)
+                origin->data[offset] = data[0];
+            else
+                origin->data[offset] = next->data[0];
         }
-    } else {
-        if (data[index] == entry) {
-            b_array::delete_item(data, index, data_size);
-            return;
-        } else {
-            throw std::out_of_range("Item not in tree");
-        }
+    }
+    else if (found && !is_leaf()) {
+        subset[index + 1]->loose_remove(entry, this, index);
+        if (index == data_size)
+            index--;
+        fix_shortage(index);
+    }
+    else if (!found && !is_leaf()) {
+        subset[index]->loose_remove(entry, origin, offset);
+        if (index == data_size)
+            index--;
+        fix_shortage(index);
+    }
+    else if (!found && is_leaf()) {
+        throw std::out_of_range("Item not in tree");
     }
     for (size_t i = 0; i < data_size; i++) {
         fix_shortage(i);
     }
-    
 }
 
 template <typename T>
@@ -591,8 +601,6 @@ T BPlusTree<T>::remove_biggest() {
     T item = subset[subset_size - 1]->remove_biggest();
     // make sure to get rid of the node we just pulled from it if it's empty
     if (subset[subset_size - 1]->data_size <= 0) {
-        // delete subset[subset_size - 1];
-        // subset[subset_size - 1] = nullptr;
         delete b_array::detach_item(subset, subset_size);
     }
     fix_shortage(data_size - 1);
@@ -603,39 +611,64 @@ template <typename T>
 void BPlusTree<T>::fix_shortage(int index) {
     BPlusTree<T>* left = subset[index];
     BPlusTree<T>* right = subset[index + 1];
-    
+
     // dont do anything if we're at a leaf, why are we even at a leaf?
     if (is_leaf())
         return;
-
     // dont do anything, we dont have a shortage
     if (left != nullptr && right != nullptr) {
         if (left->data_size >= MINIMUM && right->data_size >= MINIMUM)
             return;
     }
-
-    // case 1: we have a sibling to borrow from (left)
-    if (left != nullptr && left->data_size > MINIMUM &&
-        (right == nullptr || right->data_size <= MINIMUM)) {
-            rotate_right(index);
-    }
-    // case 1.5: we have a sibling to borrow from (right)
-    else if (right != nullptr && right->data_size > MINIMUM &&
-             (left == nullptr || left->data_size <= MINIMUM)) {
-        rotate_left(index);
-    }
-    // case 2: we dont have siblings to borrow from
-    else {
-        // move the root down to right
-        T item = b_array::delete_item(data, index, data_size);
-        if (right == nullptr) {
-            auto temp = new BPlusTree<T>(duplicates_allowed);
-            b_array::insert_item(subset, index + 1, subset_size, temp);
-            right = subset[index + 1];
+    // do regular fix b tree fix shortage if we arent about to hit a leaf
+    if (!left->is_leaf() || !right->is_leaf()) {
+        // case 1: we have a sibling to borrow from (left)
+        if (left != nullptr && left->data_size > MINIMUM &&
+            (right == nullptr || right->data_size <= MINIMUM)) {
+                rotate_right(index);
         }
-        b_array::ordered_insert(right->data, right->data_size, item);
-        // merge them
-        merge_with_next_subset(index);
+        // case 1.5: we have a sibling to borrow from (right)
+        else if (right != nullptr && right->data_size > MINIMUM &&
+                (left == nullptr || left->data_size <= MINIMUM)) {
+            rotate_left(index);
+        }
+        // case 2: we dont have siblings to borrow from
+        else {
+            // move the root down to right
+            T item = b_array::delete_item(data, index, data_size);
+            if (right == nullptr) {
+                auto temp = new BPlusTree<T>(duplicates_allowed);
+                b_array::insert_item(subset, index + 1, subset_size, temp);
+                right = subset[index + 1];
+            }
+            b_array::ordered_insert(right->data, right->data_size, item);
+            // merge them
+            merge_with_next_subset(index);
+        }
+    }
+    // we're at a node right before the leaf, do the b+tree fix instead
+    else {
+        // case 1: we have a sibling to borrow from (left)
+        if (left != nullptr && left->data_size > MINIMUM &&
+            (right == nullptr || right->data_size <= MINIMUM)) {
+            transfer_right(index);
+        }
+        // case 1.5: we have a sibling to borrow from (right)
+        else if (right != nullptr && right->data_size > MINIMUM &&
+                 (left == nullptr || left->data_size <= MINIMUM)) {
+            transfer_left(index);
+        }
+        // case 2: we dont have siblings to borrow from
+        else {
+            b_array::delete_item(data, index, data_size);
+            if (right == nullptr) {
+                auto temp = new BPlusTree<T>(duplicates_allowed);
+                b_array::insert_item(subset, index + 1, subset_size, temp);
+                right = subset[index + 1];
+            }
+            // merge them
+            merge_with_next_subset(index);
+        }
     }
 }
 
@@ -694,31 +727,43 @@ typename BPlusTree<T>::Iterator BPlusTree<T>::search(const T& entry) {
     else if (!found && !is_leaf())
         return subset[index]->search(entry);
     else if (!found && is_leaf())
-        return Iterator(nullptr);
+        return Iterator(nullptr);    
+    return Iterator(nullptr);
 }
 
 template <typename T>
 void BPlusTree<T>::transfer_left(int i) {
-    assert(i < 0);
+    assert(i < subset_size);
+    // should never call if sibling has nothing to borrow
+    assert(subset[i + 1]->data_size > 1);
+    // should never call on a non leaf
+    assert(subset[i]->subset_size == 0);
+
     b_array::attach_item(
-        subset[i - 1]->data,
-        subset[i - 1]->data_size,
-        b_array::delete_item(subset[i]->data, 0, subset[i]->data_size)
+        subset[i]->data,
+        subset[i]->data_size,
+        b_array::delete_item(subset[i + 1]->data, 0, subset[i + 1]->data_size)
     );
 
-    // transfer the subset pointers, if there's any subset to shift
-    if (subset[i]->subset_size > 0) {
-        b_array::attach_item(
-            subset[i - 1]->subset,
-            subset[i - 1]->subset_size,
-            b_array::delete_item(subset[i]->subset, 0, subset[i]->subset_size)
-        );
-
-    }
+    // update parent with right child
+    data[i] = subset[i + 1]->data[0];
 }
 
 template <typename T>
 void BPlusTree<T>::transfer_right(int i) {
-    assert(i > data_size);
-    
+    // assert(i > data_size);
+    // should never call if sibling has nothing to borrow
+    assert(subset[i]->data_size > 1);
+    // should never call on a non leaf
+    assert(subset[i]->subset_size == 0);
+
+    b_array::insert_item(
+        subset[i + 1]->data,
+        0,
+        subset[i + 1]->data_size,
+        b_array::detach_item(subset[i]->data, subset[i]->data_size)
+    );
+
+    // update parent with right child
+    data[i] = subset[i + 1]->data[0];
 }
