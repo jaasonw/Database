@@ -5,8 +5,9 @@
  * Notes:
  */
 #include "BPlusTree.h"
-#include "test/tree_test.h"
 #include "test/three_test.h"
+#include "test/tree_debug.h"
+#include "test/tree_test.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -29,10 +30,7 @@ int main(int argc, char const* argv[]) {
              << filename << endl;
         cerr << "Error: ";
         cerr << e.what() << endl;
-        ofstream tree_dump;
-        tree_dump.open("tree_dump.txt");
-        tree.print_as_tree_debug(tree_dump);
-        tree_dump.close();
+        tree_debug::dump_tree(filename, tree);
         cerr << "Events: " << endl;
         tree.print_event_log(cerr);
     }
