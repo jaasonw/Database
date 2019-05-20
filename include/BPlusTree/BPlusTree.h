@@ -78,6 +78,8 @@ private:
     // return a pointer to this key. NULL if not there.
     T* find(const T& entry);
 
+    BPlusTree<T>* link_leaves(BPlusTree<T>* previous = nullptr);
+
     BPlusTree<T>* next = nullptr;
 public:
 
@@ -186,6 +188,9 @@ public:
         return outs;
     }
 
+    // validation
+    bool is_valid();
+
     // Iterators
     Iterator begin();
     Iterator end();
@@ -203,6 +208,7 @@ BPlusTree<T>::BPlusTree(bool dupes_allowed) : duplicates_allowed(dupes_allowed) 
 template <typename T>
 BPlusTree<T>::BPlusTree(const BPlusTree<T>& other) {
     copy_tree(other);
+    link_leaves();
 }
 
 template <typename T>
@@ -211,6 +217,7 @@ BPlusTree<T>& BPlusTree<T>::operator=(const BPlusTree<T>& other) {
         return *this;
     clear_tree();
     copy_tree(other);
+    link_leaves();
     return *this;
 }
 
@@ -566,11 +573,13 @@ void BPlusTree<T>::loose_remove(const T& entry, BPlusTree<T>* origin, int offset
     if (found && is_leaf()) {
         // remove the actual item
         b_array::delete_item(data, index, data_size);
-        if (origin != nullptr && next != nullptr) {
+        if (origin != nullptr) {
             if (data_size > 0)
                 origin->data[offset] = data[0];
-            else
-                origin->data[offset] = next->data[0];
+            else {
+                if (next != nullptr)
+                    origin->data[offset] = next->data[0];
+            }
         }
     }
     else if (found && !is_leaf()) {
@@ -586,7 +595,8 @@ void BPlusTree<T>::loose_remove(const T& entry, BPlusTree<T>* origin, int offset
         fix_shortage(index);
     }
     else if (!found && is_leaf()) {
-        throw std::out_of_range("Item not in tree");
+        // throw std::out_of_range("Item not in tree");
+        return;
     }
     for (size_t i = 0; i < data_size; i++) {
         fix_shortage(i);
@@ -766,4 +776,76 @@ void BPlusTree<T>::transfer_right(int i) {
 
     // update parent with right child
     data[i] = subset[i + 1]->data[0];
+}
+
+template <typename T>
+BPlusTree<T>* BPlusTree<T>::link_leaves(BPlusTree<T>* previous) {
+    if (is_leaf())
+        return nullptr;
+    // link if the thing below is a leaf
+    if (subset_size > 0 && subset[0]->is_leaf()) {
+        if (previous != nullptr)
+            previous->next = subset[0];
+        for (size_t i = 0; i < subset_size - 1; i++) {
+            subset[i]->next = subset[i + 1];
+        }
+        return subset[subset_size - 1];
+    }
+    // keep recursioning down
+    else {
+        BPlusTree<T>* last_link = previous;
+        for (size_t i = 0; i < subset_size - 1; i++) {
+            BPlusTree<T>* left = subset[i];
+            BPlusTree<T>* right = subset[i + 1];
+            last_link = left->link_leaves(last_link);
+            BPlusTree<T>* right_link = right->link_leaves(last_link);
+            last_link = right_link;
+        }
+        return last_link;
+    }
+}
+template <typename T>
+bool BPlusTree<T>::is_valid() {
+    /* is_valid():
+    *  check to see if all B+ tree conditions are met with the current (sub)tree:
+    * if is_leaf: return true;
+    * if (data[last item] is NOT <= all subset[last subtree]->data
+    *      return false;
+    * for every data[i]
+    *      if data[i] is NOT > all subset[i]->data
+    *          return false;
+    * //now, this is lame:
+    * for every data[i]
+    *      if data[i] is not in the leaves
+    *          return false;
+    *
+    * for every subtree subset[i]
+    *      if !subset[i]->is_valid()
+    *          return false;
+    * . . . . . . . . . . . . . . . .
+    */
+    if (is_leaf())
+        return true;
+    if (!b_array::is_le(subset[subset_size - 1]->data,
+                        subset[subset_size - 1]->data_size,
+                        data[data_size - 1]))
+        return false;
+    for (size_t i = 0; i < data_size; i++) {
+
+    }
+    for (size_t i = 0; i < data_size; i++) {
+        if (!b_array::is_gt(subset[i]->data,
+                            subset[i]->data_size,
+                            data[data_size - 1]))
+            return false;
+        if (find(data[i]) == nullptr) {
+            auto test = find(data[i]);
+            return false;
+        }
+    }
+    for (size_t i = 0; i < subset_size; i++) {
+        if (!subset[i]->is_valid())
+            return false;
+    }
+    return true;
 }
