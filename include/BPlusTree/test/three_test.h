@@ -42,7 +42,13 @@ void test_assignment_operator() {
 
     // print tree into stringstreams
     s1 << tree1;
+    s1 << std::endl;
+    tree1.print_as_linked(s1);
+    
     s2 << tree2;
+    s2 << std::endl;
+    tree2.print_as_linked(s2);
+
     // tree outputs should be the same
     assert(s1.str() == s2.str());
     std::cout << "Assignment operator test passed" << std::endl;
@@ -67,8 +73,13 @@ void test_copy_constructor() {
 
     // print tree into stringstreams
     s1 << tree1;
+    s1 << std::endl;
+    tree1.print_as_linked(s1);
+
     s2 << tree2;
-    // tree outputs should be the same
+    s2 << std::endl;
+    tree2.print_as_linked(s2);
+
     assert(s1.str() == s2.str());
     std::cout << "Copy constructor test passed" << std::endl;
 }
