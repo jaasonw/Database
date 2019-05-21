@@ -6,18 +6,18 @@
 template <typename T>
 class Queue {
 private:
-    Node<T>* _data;
-    Node<T>* _data_back;
+    LinkedList::Node<T>* _data;
+    LinkedList::Node<T>* _data_back;
     int _size;
 
 public:
     class Iterator {
     private:
-        Node<T>* _node;
+        LinkedList::Node<T>* _node;
 
     public:
         friend class Queue;
-        Iterator(Node<T>* node = NULL) { this->_node = node; }
+        Iterator(LinkedList::Node<T>* node = NULL) { this->_node = node; }
         T& operator*() { return _node->_item; }
 
         friend Iterator operator++(Iterator& it, int unused) {
