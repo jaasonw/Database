@@ -4,12 +4,18 @@
  * Purpose: 
  * Notes:
  */
+#include "Parser.h"
 #include <iostream>
 
 using namespace std;
 
 int main(int argc, char const* argv[]) {
-    
+    Parser p("");
+    string command;
+    cout << "Enter an sql command: ";
+    // cin >> command;
+    getline(cin, command);
+    p.parse(command);
     cout << endl;
     system("pause");
     return 0;
