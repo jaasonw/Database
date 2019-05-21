@@ -9,17 +9,18 @@ COMPILER = "g++"
 EXECUTABLE = "a.exe"
 MAIN = "main.cpp"
 
-if sys.argv[1] == "map_interactive":
-    EXECUTABLE = "map_interactive.exe"
-    MAIN = "tests/map_interactive.cpp"
+if (len(sys.argv) > 1):
+    if sys.argv[1] == "map_interactive":
+        EXECUTABLE = "map_interactive.exe"
+        MAIN = "tests/map_interactive.cpp"
 
-elif sys.argv[1] == "btree_interactive":
-    EXECUTABLE = "btree_interactive.exe"
-    MAIN = "tests/btree_interactive.cpp"
+    elif sys.argv[1] == "btree_interactive":
+        EXECUTABLE = "btree_interactive.exe"
+        MAIN = "tests/btree_interactive.cpp"
 
-elif sys.argv[1] == "bplus_test":
-    EXECUTABLE = "bplus_test.exe"
-    MAIN = "tests/bplus_test.cpp"
+    elif sys.argv[1] == "bplus_test":
+        EXECUTABLE = "bplus_test.exe"
+        MAIN = "tests/bplus_test.cpp"
 
 
 # includes and sources should search recursively
