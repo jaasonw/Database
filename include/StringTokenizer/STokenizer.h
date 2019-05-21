@@ -11,7 +11,7 @@ public:
     bool fail() { return state == -1; };
 
     // extract one token (very similar to the way cin >> works)
-    friend STokenizer& operator>>(STokenizer& s, Token& t);
+    friend STokenizer& operator>>(STokenizer& s, string_tokenizer::Token& t);
 
     // set a new string as the input string
     void set_string(char* str);

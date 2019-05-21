@@ -1,4 +1,4 @@
-#include "STokenizer.h"
+#include "StringTokenizer/STokenizer.h"
 
 STokenizer::STokenizer() : pos(0), buffer(""), state(0) {
     make_table(state_table);
@@ -89,7 +89,7 @@ void STokenizer::set_string(char* str) {
     strcpy(buffer, str);
 }
 
-STokenizer& operator>>(STokenizer& s, Token& t) {
+STokenizer& operator>>(STokenizer& s, string_tokenizer::Token& t) {
     std::string str;
     s.get_token(s.state, str);
     int _state = 0;

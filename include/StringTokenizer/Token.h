@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 
+namespace string_tokenizer {
 class Token {
 private:
     std::string _token;
@@ -17,3 +18,4 @@ public:
     void set_type(int type) { _type = type; }
     friend std::ostream& operator<<(std::ostream& outs, const Token& t);
 };
+} // namespace string_tokenizer
