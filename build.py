@@ -2,10 +2,25 @@
 # written by jason wong
 
 import os
+import sys
 import time
 
 COMPILER = "g++"
 EXECUTABLE = "a.exe"
+MAIN = "main.cpp"
+
+if sys.argv[1] == "map_interactive":
+    EXECUTABLE = "map_interactive.exe"
+    MAIN = "tests/map_interactive.cpp"
+
+elif sys.argv[1] == "btree_interactive":
+    EXECUTABLE = "btree_interactive.exe"
+    MAIN = "tests/btree_interactive.cpp"
+
+elif sys.argv[1] == "bplus_test":
+    EXECUTABLE = "bplus_test.exe"
+    MAIN = "tests/bplus_test.cpp"
+
 
 # includes and sources should search recursively
 INCLUDES = [
@@ -58,7 +73,7 @@ try:
 except:
     pass
 
-cmd = f"{COMPILER} {flag_str} {include_str} -o {EXECUTABLE} main.cpp {sources_str} {link_str}"
+cmd = f"{COMPILER} {flag_str} {include_str} -o {EXECUTABLE} {MAIN} {sources_str} {link_str}"
 print(cmd)
 t1 = time.time()
 os.system(cmd)
