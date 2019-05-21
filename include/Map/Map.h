@@ -93,6 +93,8 @@ void Map<Key, T>::set(const Key& key, const T& value) {
 
 template <typename Key, typename T>
 T& Map<Key, T>::operator[](const Key& key) {
+    if (tree.search(Pair<Key, T>(key, T())) == nullptr)
+        tree.insert(Pair<Key, T>(key, T()));
     return tree.search(Pair<Key, T>(key, T()))->value;
 }
 
