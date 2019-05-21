@@ -848,7 +848,6 @@ bool BPlusTree<T>::is_valid() {
                             data[data_size - 1]))
             return false;
         if (find(data[i]) == nullptr) {
-            auto test = find(data[i]);
             return false;
         }
     }
