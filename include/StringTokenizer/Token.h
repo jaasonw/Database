@@ -19,5 +19,17 @@ public:
     friend std::ostream& operator<<(std::ostream& outs, const Token& t) {
          return outs << t._token;
     }
+    friend bool operator!=(const Token& left, std::string right) {
+        return left._token != right;
+    }
+    friend bool operator!=(const Token& left, const Token& right) {
+        return left._token != right._token;
+    }
+    friend bool operator==(const Token& left, std::string right) {
+        return left._token == right;
+    }
+    friend bool operator==(const Token& left, const Token& right) {
+        return left._token == right._token;
+    }
 };
 } // namespace string_tokenizer
