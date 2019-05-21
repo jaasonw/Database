@@ -1,13 +1,13 @@
 /*
  * Author: Jason Wong
- * Project: BTree
- * Purpose: Implementing a BTree
+ * Project: B+Tree
+ * Purpose: Implementing a B+Tree
  * Notes:
  */
-#include "BPlusTree.h"
-#include "test/three_test.h"
-#include "test/tree_debug.h"
-#include "test/tree_test.h"
+#include "BPlusTree/BPlusTree.h"
+#include "BPlusTree/test/three_test.h"
+#include "BPlusTree/test/tree_debug.h"
+#include "BPlusTree/test/tree_test.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -15,14 +15,15 @@
 using namespace std;
 
 int main(int argc, char const* argv[]) {
-    // b_plus_tree_big_three::test_assignment_operator();
-    // b_plus_tree_big_three::test_copy_constructor();
+    b_plus_tree_big_three::test_assignment_operator();
+    b_plus_tree_big_three::test_copy_constructor();
+    
+    // it passes
     // b_plus_tree_big_three::test_delete();
 
     BPlusTree<int> tree;
     try {
         b_plus_tree_test::interactive_test(tree);
-
     } catch (const std::exception& e) {
         // some sort of exception was called, catch it and dump it in a file
         string filename = "tree_dump.txt";
