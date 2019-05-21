@@ -16,6 +16,8 @@ public:
     std::string token_str() const { return _token; };
     void set_string(std::string str) { _token = str; }
     void set_type(int type) { _type = type; }
-    friend std::ostream& operator<<(std::ostream& outs, const Token& t);
+    friend std::ostream& operator<<(std::ostream& outs, const Token& t) {
+         return outs << t._token;
+    }
 };
 } // namespace string_tokenizer

@@ -1,4 +1,6 @@
-#include "Token.h"
+#include "StringTokenizer/Token.h"
+
+using namespace string_tokenizer;
 
 Token::Token(): _token(""), _type(0) {}
 Token::Token(std::string str, int type): _token(str), _type(type)  {}
@@ -22,7 +24,4 @@ std::string Token::type_string() const {
         default:
             return "UNKNOWN";
     }
-}
-std::ostream& operator<<(std::ostream& outs, const Token& t) {
-    return outs << t._token;
 }
