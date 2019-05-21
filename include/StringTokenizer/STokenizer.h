@@ -2,11 +2,12 @@
 #include "Token.h"
 #include "state_machine/state_table.h"
 #include <cstring>
+#include <string>
 
 class STokenizer {
 public:
     STokenizer();
-    STokenizer(char* str);
+    STokenizer(const char* str);
     bool done() { return pos >= strlen(buffer); }
     bool fail() { return state == -1; };
 
@@ -14,7 +15,7 @@ public:
     friend STokenizer& operator>>(STokenizer& s, string_tokenizer::Token& t);
 
     // set a new string as the input string
-    void set_string(char* str);
+    void set_string(const char* str);
 
     static const int MAX_BUFFER = 255;
 

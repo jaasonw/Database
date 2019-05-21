@@ -4,7 +4,7 @@ STokenizer::STokenizer() : pos(0), buffer(""), state(0) {
     make_table(state_table);
 }
 
-STokenizer::STokenizer(char* str) : pos(0), state(0) {
+STokenizer::STokenizer(const char* str) : pos(0), state(0) {
     make_table(state_table);
     strcpy(buffer, str);
 }
@@ -82,7 +82,7 @@ bool STokenizer::get_token(int start_state, std::string& token) {
     return has_token;
 }
 
-void STokenizer::set_string(char* str) {
+void STokenizer::set_string(const char* str) {
     // reset pos and state
     pos = 0;
     state = 0;
