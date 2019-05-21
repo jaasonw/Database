@@ -27,8 +27,10 @@ struct Pair {
 template <typename Key, typename T>
 std::ostream& operator<<(std::ostream& outs, const Pair<Key, T>& pair) {
     outs << "{ " << pair.key << ": ";
-    b_array::array::print_array(&pair.values[0], pair.values.size());
-    outs << " }";
+    for (size_t i = 0; i < pair.values.size(); i++) {
+        outs << pair.values[i] << " ";
+    }
+    outs << "}";
     return outs;
 }
 
