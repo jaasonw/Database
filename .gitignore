@@ -1,5 +1,4 @@
 .vscode
-build.py
 *.exe
 .clang-format
 z_work_report.h
