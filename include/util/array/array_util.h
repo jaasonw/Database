@@ -144,7 +144,7 @@ void print_array(const b_array::Array<T>& data, size_t size, int level = 0,
 template <typename T>
 bool is_gt(const b_array::Array<T>& data, size_t size, const T& item) {
     for (size_t i = 0; i < size; i++) {
-        if (data[i] == item || data[i] < item) {
+        if (item < data[i] || item == data[i]) {
             return false;
         }
     }
@@ -155,7 +155,7 @@ bool is_gt(const b_array::Array<T>& data, size_t size, const T& item) {
 template <typename T>
 bool is_le(const b_array::Array<T>& data, size_t size, const T& item) {
     for (size_t i = 0; i < size; i++) {
-        if (!(data[i] < item) && data[i] != item) {
+        if (item > data[i]) {
             return false;
         }
     }
