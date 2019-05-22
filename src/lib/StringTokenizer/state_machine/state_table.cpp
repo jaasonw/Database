@@ -1,4 +1,4 @@
-#include "state_machine/state_table.h"
+#include "StringTokenizer/state_machine/state_table.h"
 #include <iostream>
 
 namespace state_machine {
