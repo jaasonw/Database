@@ -1,6 +1,6 @@
 #pragma once
 #include "BPlusTree/BPlusTree.h"
-#include "Multimap/MultiPair.h"
+#include "MultiMap/MultiPair.h"
 
 namespace MultiMap {
 
@@ -94,7 +94,7 @@ void MultiMap<Key, T>::insert(const Key& key, const T& value) {
 }
 template <typename Key, typename T>
 std::vector<T>& MultiMap<Key, T>::operator[](const Key& key) {
-    return tree.search(Pair<Key, T>(key, T())).values;
+    return at(key);
 }
 
 template <typename Key, typename T>
@@ -107,7 +107,9 @@ const std::vector<T>& MultiMap<Key, T>::operator[](const Key& key) const {
 }
 template <typename Key, typename T>
 std::vector<T>& MultiMap<Key, T>::at(const Key& key) {
-    return tree.search(Pair<Key, T>(key, T())).values;
+    if (tree.search(Pair<Key, T>(key, T())) == nullptr)
+        tree.insert(Pair<Key, T>(key));
+    return tree.search(Pair<Key, T>(key, T()))->values;
 }
 
 template <typename Key, typename T>
@@ -125,7 +127,7 @@ bool MultiMap<Key, T>::contains(const Key& key) {
 
 template <typename Key, typename T>
 std::vector<T>& MultiMap<Key, T>::get(const Key& key) {
-    return tree.search(Pair<Key, T>(key, T())).values;
+    return tree.search(Pair<Key, T>(key, T()))->values;
 }
 
 template <typename Key, typename T>
