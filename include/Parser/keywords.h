@@ -11,7 +11,8 @@ enum Command {
     CREATE,
     VALUE,
     RELATIONAL_OPERATOR,
-    LOGICAL_OPERATOR
+    LOGICAL_OPERATOR,
+    ASTERISK
 };
 
 }

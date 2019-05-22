@@ -19,6 +19,8 @@ private:
     // the keyword map
     Map::Map<std::string, sql_parser::Command> keywords;
 
+    // state table stuff
+    int state_table[state_machine::NUM_ROWS][state_machine::MAX_COLUMNS];
 
     // init
     void init();
@@ -45,6 +47,21 @@ void Parser::set_string(std::string input) {
 }
 
 void Parser::init() {
+    // init state table
+    state_machine::init_table(state_table);
+    state_machine::mark_fail(state_table, 0);
+    state_machine::mark_fail(state_table, 1);
+    state_machine::mark_fail(state_table, 2);
+    state_machine::mark_fail(state_table, 3);
+    state_machine::mark_fail(state_table, 4);
+    state_machine::mark_fail(state_table, 5);
+    state_machine::mark_success(state_table, 6);
+    state_machine::mark_fail(state_table, 7);
+    state_machine::mark_fail(state_table, 8);
+    state_machine::mark_fail(state_table, 9);
+    state_machine::mark_fail(state_table, 10);
+    state_machine::mark_fail(state_table, 11);
+
     // init keyword map
     keywords["select"] = sql_parser::SELECT;
     keywords["insert"] = sql_parser::INSERT;
@@ -56,6 +73,7 @@ void Parser::init() {
     keywords[">="] = sql_parser::RELATIONAL_OPERATOR;
     keywords["and"] = sql_parser::LOGICAL_OPERATOR;
     keywords["or"] = sql_parser::LOGICAL_OPERATOR;
+    keywords["*"] = sql_parser::ASTERISK;
 }
 void Parser::parse(std::string input) {
     set_string(input);
