@@ -76,6 +76,7 @@ public:
 
     // operations
     bool contains(const Key& key, const T& value);
+    bool contains(const Key& key);
 
     friend std::ostream& operator<<(std::ostream& outs, const Map<Key,T>& map) {
         map.tree.print_as_list();
@@ -130,6 +131,12 @@ template <typename Key, typename T>
 bool Map<Key, T>::contains(const Key& key, const T& value) {
     auto search = tree.search(key);
     return search != nullptr && search->value == value;
+}
+
+template <typename Key, typename T>
+bool Map<Key, T>::contains(const Key& key) {
+    auto search = tree.search(key);
+    return search != nullptr;
 }
 
 template <typename Key, typename T>
