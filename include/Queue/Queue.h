@@ -19,6 +19,7 @@ public:
         friend class Queue;
         Iterator(LinkedList::Node<T>* node = NULL) { this->_node = node; }
         T& operator*() { return _node->_item; }
+        T* operator->() { return &_node->item; }
 
         friend Iterator operator++(Iterator& it, int unused) {
             Iterator hold;
@@ -35,6 +36,12 @@ public:
         }
         friend bool operator==(const Iterator& left, const Iterator& right) {
             return left._node == right._node;
+        }
+        friend bool operator!=(const Iterator& left, std::nullptr_t) {   
+            return left._node != nullptr;
+        }
+        friend bool operator==(const Iterator& left, std::nullptr_t) {
+            return left._node == nullptr;
         }
     };
 
