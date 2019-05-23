@@ -4,15 +4,23 @@
 
 namespace sql_parser {
 
-enum Command {
+enum Keyword {
     ZERO,
     SELECT,
     INSERT,
     CREATE,
-    VALUE,
+    STRING,
     RELATIONAL_OPERATOR,
     LOGICAL_OPERATOR,
-    ASTERISK
+    ASTERISK,
+    INTO,
+    VALUES,
+    FROM,
+    COMMA,
+    WHERE,
+    TABLE,
+    OPEN_PARENTH,
+    CLOSE_PARENTH
 };
 
 }
