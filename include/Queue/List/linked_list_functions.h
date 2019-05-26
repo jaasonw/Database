@@ -66,7 +66,7 @@ namespace LinkedList {
     template <typename T>
     T delete_head(Node<T>*& head) {
         if (head == NULL) {
-            return NULL;
+            return T();
         }
         Node<T>* hold = head;
         T hold_item = head->_item;
