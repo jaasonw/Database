@@ -6,6 +6,7 @@
 #include "Queue/Queue.h"
 #include "StringTokenizer/STokenizer.h"
 #include <cstring>
+#include <cctype>
 #include <exception>
 #include <iostream>
 #include <string>
@@ -19,7 +20,7 @@ private:
     // the parse tree
     MultiMap::MultiMap<std::string, std::string> parse_tree;
 
-    SQLStateMachine state;
+    SQLStateMachine sql_state;
 
     // init
     void init();
@@ -40,7 +41,7 @@ void Parser::set_string(std::string input) {
     string_tokenizer::Token t;
     while (!tokenizer.done()) {
         tokenizer >> t;
-        if (t.type_string() != "SPACE")
+        if (!isspace(t.token_str()[0]))
             tokens.push(t);
     }
 }
@@ -50,25 +51,59 @@ void Parser::init() {
 }
 void Parser::parse(std::string input) {
     set_string(input);
-    for (auto it = tokens.it_begin(); it != tokens.it_end(); it++) {
-        std::cout << *it << std::endl;
-    }
+    sql_state.reset_state();
+    // for (auto it = tokens.it_begin(); it != tokens.it_end(); it++) {
+    //     std::cout << *it << std::endl;
+    // }
+    // select * from student
+    int last_state = sql_state.get_state();
     while (!tokens.empty()) {
         string_tokenizer::Token t = tokens.pop();
         std::string token_string = "";
-        // if there's an opening quotation then interpret as full word;
-        if (t.token_str() == "\"") {
-            while (tokens.it_begin()->token_str != "\"") {
-                // uh oh, we never found the closing quotation mark
-                if (tokens.size() == 0)
-                    throw std::invalid_argument("Error: no closing quote");
+        // place holder code that just takes the token and puts it in string
+        token_string = t.token_str();
 
-                if (token_string.size() > 0)
-                    token_string += " ";
-                token_string += tokens.pop().token_str();
-            }
-            // remove the closing quotation mark
-            tokens.pop();
+
+        // if there's an opening quotation then interpret as full word;
+        // if (t.token_str() == "\"") {
+        //     while (tokens.it_begin()->token_str != "\"") {
+        //         // uh oh, we never found the closing quotation mark
+        //         if (tokens.size() == 1)
+        //             throw std::invalid_argument("Error: no closing quote");
+        //         if (token_string.size() > 0)
+        //             token_string += " ";
+        //         token_string += tokens.pop().token_str();
+        //     }
+        //     // remove the closing quotation mark
+        //     tokens.pop();
+        // }
+        
+        last_state = sql_state.update_state(token_string);
+        // this wont make any sense unless you look at the state diagram or the
+        // state table spreadsheet
+        switch (last_state) {
+            case -1:
+                throw std::runtime_error("Syntax Error at token: " + token_string);
+                break;
+            case 1:
+            case 12:
+            case 18:
+                parse_tree["command"] += token_string;
+                break;
+            case 2:
+            case 3:
+            case 16:
+                parse_tree["fields"] += token_string;
+                break;
+            case 6:
+            case 14:
+            case 20:
+                parse_tree["table_name"] += token_string;
+                break;
         }
     }
+    if (sql_state.is_invalid() || !sql_state.is_success()) {
+        throw std::runtime_error("Error: unexpected end of input");
+    }
+    std::cout << parse_tree << std::endl;
 }

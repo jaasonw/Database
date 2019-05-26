@@ -15,7 +15,12 @@ int main(int argc, char const* argv[]) {
     cout << "Enter an sql command: ";
     // cin >> command;
     getline(cin, command);
-    p.parse(command);
+    try {
+        p.parse(command);
+    }
+    catch (std::runtime_error e) {
+        cerr << e.what();
+    }
     cout << endl;
     system("pause");
     return 0;

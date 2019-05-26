@@ -17,6 +17,10 @@ public:
     SQLStateMachine();
     int update_state(std::string token);
     int get_state() { return last_state; };
+    void reset_state();
+    bool is_success();
+    bool is_fail();
+    bool is_invalid();
 };
 
 SQLStateMachine::SQLStateMachine() {
@@ -35,6 +39,7 @@ SQLStateMachine::SQLStateMachine() {
     keywords["into"] = sql_parser::INTO;
     keywords["values"] = sql_parser::VALUES;
     keywords["from"] = sql_parser::FROM;
+    keywords[","] = sql_parser::COMMA;
 
     // init state table
     state_machine::init_table(state_table);
@@ -140,4 +145,16 @@ int SQLStateMachine::update_state(std::string token) {
     }
     last_state = state_table[last_state][type];
     return last_state;
+}
+void SQLStateMachine::reset_state() {
+    last_state = 0;
+}
+bool SQLStateMachine::is_success() {
+    return state_machine::is_success(state_table, last_state);
+}
+bool SQLStateMachine::is_fail() {
+    return !state_machine::is_success(state_table, last_state);
+}
+bool SQLStateMachine::is_invalid() {
+    return last_state == -1;
 }
