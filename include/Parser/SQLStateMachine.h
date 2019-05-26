@@ -3,6 +3,7 @@
 #include "Parser/keywords.h"
 #include "StringTokenizer/state_machine/state_table.h"
 #include "StringTokenizer/Token.h"
+#include <cctype>
 #include <string>
 
 class SQLStateMachine {
@@ -11,7 +12,6 @@ private:
     Map::Map<std::string, sql_parser::Keyword> keywords;
     // the state table
     int state_table[state_machine::NUM_ROWS][state_machine::MAX_COLUMNS];
-    
     int last_state = 0;
 public:
     SQLStateMachine();
@@ -25,21 +25,25 @@ public:
 
 SQLStateMachine::SQLStateMachine() {
     // init keyword map
-    keywords["select"] = sql_parser::SELECT;
-    keywords["insert"] = sql_parser::INSERT;
-    keywords["create"] = sql_parser::CREATE;
+    keywords["SELECT"] = sql_parser::SELECT;
+    keywords["INSERT"] = sql_parser::INSERT;
+    keywords["CREATE"] = sql_parser::CREATE;
+    keywords["INTO"] = sql_parser::INTO;
+    keywords["FROM"] = sql_parser::FROM;
+    keywords["WHERE"] = sql_parser::WHERE;
+    keywords["TABLE"] = sql_parser::TABLE;
+    keywords["VALUES"] = sql_parser::VALUES;
+    keywords["*"] = sql_parser::ASTERISK;
+    keywords[","] = sql_parser::COMMA;
+    keywords["("] = sql_parser::OPEN_PARENTH;
+    keywords[")"] = sql_parser::CLOSE_PARENTH;
     keywords["="] = sql_parser::RELATIONAL_OPERATOR;
     keywords[">"] = sql_parser::RELATIONAL_OPERATOR;
     keywords["<"] = sql_parser::RELATIONAL_OPERATOR;
     keywords["<="] = sql_parser::RELATIONAL_OPERATOR;
     keywords[">="] = sql_parser::RELATIONAL_OPERATOR;
-    keywords["and"] = sql_parser::LOGICAL_OPERATOR;
-    keywords["or"] = sql_parser::LOGICAL_OPERATOR;
-    keywords["*"] = sql_parser::ASTERISK;
-    keywords["into"] = sql_parser::INTO;
-    keywords["values"] = sql_parser::VALUES;
-    keywords["from"] = sql_parser::FROM;
-    keywords[","] = sql_parser::COMMA;
+    keywords["AND"] = sql_parser::LOGICAL_OPERATOR;
+    keywords["OR"] = sql_parser::LOGICAL_OPERATOR;
 
     // init state table
     state_machine::init_table(state_table);
@@ -136,9 +140,9 @@ SQLStateMachine::SQLStateMachine() {
 
 int SQLStateMachine::update_state(std::string token) {
     sql_parser::Keyword type = sql_parser::STRING;
-    // lowercase the token
+    // uppercase the token
     for (size_t i = 0; i < token.size(); i++) {
-        token[i] = tolower(token[i]);
+        token[i] = toupper(token[i]);
     }
     if (keywords.contains(token)) {
         type = keywords[token];
