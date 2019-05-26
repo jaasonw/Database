@@ -28,7 +28,10 @@ template <typename Key, typename T>
 std::ostream& operator<<(std::ostream& outs, const Pair<Key, T>& pair) {
     outs << "{ " << pair.key << ": [ ";
     for (size_t i = 0; i < pair.values.size(); i++) {
-        outs << pair.values[i] << " ";
+        outs << pair.values[i];
+        if (i < pair.values.size() - 1)
+            outs << ',';
+        outs << " ";
     }
     outs << "] }";
     return outs;
