@@ -1,6 +1,4 @@
 #pragma once
-#include "Map/Map.h"
-#include <string>
 
 namespace sql_parser {
 
