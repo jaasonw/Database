@@ -10,9 +10,9 @@ STokenizer::STokenizer(const char* str) : pos(0), state(0) {
 }
 
 void STokenizer::make_table(int state_table[][MAX_COLUMNS]) {
-    const char* ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    const char* ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
     const char* NUMBERS = "1234567890";
-    const char* PUNCTUATION = ",\\.?!;\"'()[]{}-/";
+    const char* PUNCTUATION = ",\\.?!;\"'()[]{}/";
     const char* WHITESPACE = " \t\n\r";
 
     state_machine::init_table(state_table);

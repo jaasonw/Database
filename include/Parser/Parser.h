@@ -17,23 +17,20 @@ private:
     Queue<string_tokenizer::Token> tokens;
     // the tokenizer
     STokenizer tokenizer;
-    // the parse tree
-    MultiMap::MultiMap<std::string, std::string> parse_tree;
 
     SQLStateMachine sql_state;
 
-    // init
-    void init();
     void set_string(std::string input);
+    // combines words in between quotes into 1 token
+    void combine_quotes();
 public:
     Parser(std::string input);
     // converts the command into a parse tree
-    void parse(std::string input);
+    MultiMap::MultiMap<std::string, std::string> parse(std::string input);
 };
 
 Parser::Parser(std::string input) {
     set_string(input);
-    init();
 }
 void Parser::set_string(std::string input) {
     tokens.clear();
@@ -41,49 +38,30 @@ void Parser::set_string(std::string input) {
     string_tokenizer::Token t;
     while (!tokenizer.done()) {
         tokenizer >> t;
-        if (!isspace(t.token_str()[0]))
-            tokens.push(t);
+        tokens.push(t);
     }
+    combine_quotes();
+    std::cout << tokens << std::endl;
 }
 
-void Parser::init() {
-
-}
-void Parser::parse(std::string input) {
+MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
+    MultiMap::MultiMap<std::string, std::string> parse_tree;
     set_string(input);
     sql_state.reset_state();
-    // for (auto it = tokens.it_begin(); it != tokens.it_end(); it++) {
-    //     std::cout << *it << std::endl;
-    // }
-    // select * from student
     int last_state = sql_state.get_state();
     while (!tokens.empty()) {
         string_tokenizer::Token t = tokens.pop();
+        while (isspace(t.token_str()[0])) {
+            t = tokens.pop();
+        }
         std::string token_string = "";
-        // place holder code that just takes the token and puts it in string
         token_string = t.token_str();
-
-
-        // if there's an opening quotation then interpret as full word;
-        // if (t.token_str() == "\"") {
-        //     while (tokens.it_begin()->token_str != "\"") {
-        //         // uh oh, we never found the closing quotation mark
-        //         if (tokens.size() == 1)
-        //             throw std::invalid_argument("Error: no closing quote");
-        //         if (token_string.size() > 0)
-        //             token_string += " ";
-        //         token_string += tokens.pop().token_str();
-        //     }
-        //     // remove the closing quotation mark
-        //     tokens.pop();
-        // }
-        
         last_state = sql_state.update_state(token_string);
         // this wont make any sense unless you look at the state diagram or the
         // state table spreadsheet
         switch (last_state) {
             case -1:
-                throw std::runtime_error("Syntax Error at token: " + token_string);
+                throw std::runtime_error("Error unexpected token: " + token_string);
                 break;
             case 1:
             case 12:
@@ -105,5 +83,31 @@ void Parser::parse(std::string input) {
     if (sql_state.is_invalid() || !sql_state.is_success()) {
         throw std::runtime_error("Error: unexpected end of input");
     }
-    std::cout << parse_tree << std::endl;
+    return parse_tree;
+}
+
+void Parser::combine_quotes() {
+    Queue<string_tokenizer::Token> _tokens;
+    // combine words between quotation marks
+    while (!tokens.empty()) {
+        auto current_token = tokens.pop();
+        if (current_token.token_str() == "\"") {
+            std::string token_string = "";
+            while (!tokens.empty() && tokens.front().token_str() != "\"") {
+                token_string += tokens.pop().token_str();
+            }
+            // we ran out of tokens without ever hitting another quote
+            if (tokens.empty())
+                throw std::runtime_error("Syntax error: no closing quote");
+            // get rid of the closing quote
+            if (tokens.front().token_str() == "\"")
+                tokens.pop();
+            
+            _tokens.push(string_tokenizer::Token(token_string, 1));
+        }
+        else {
+            _tokens.push(current_token);
+        }
+    }
+    tokens = _tokens;
 }
