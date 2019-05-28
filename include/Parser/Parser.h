@@ -5,7 +5,6 @@
 #include "Parser/keywords.h"
 #include "Queue/Queue.h"
 #include "StringTokenizer/STokenizer.h"
-#include <cstring>
 #include <cctype>
 #include <exception>
 #include <iostream>
