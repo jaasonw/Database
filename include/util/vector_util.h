@@ -18,4 +18,5 @@ std::ostream& operator<<(std::ostream& outs, const std::vector<T>& list) {
 template <typename T>
 std::vector<T>& operator+=(std::vector<T>& list, const T& item) {
     list.push_back(item);
+    return list;
 }
