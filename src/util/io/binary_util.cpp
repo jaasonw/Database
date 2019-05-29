@@ -1,6 +1,6 @@
 #include "util/io/binary_util.h"
 
-namespace binary_fio {
+namespace bin_io {
 
 bool file_exists(const char* filename) {
     const bool debug = false;
@@ -53,4 +53,4 @@ void open_fileW(std::fstream& f, const char filename[]) {
     }
 }
 
-} // namespace binary_fio
+} // namespace bin_io
