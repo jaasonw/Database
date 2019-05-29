@@ -2,47 +2,42 @@
 #include "util/io/binary_util.h"
 #include <cstring>
 
+// represents a block of data
 class Record {
+private:
+    static const int ROWS = 20;
+    static const int COLS = 20;
+    int record_number;
+    char buffer[ROWS][COLS];
 public:
     Record() {
-        record[0] = NULL;
-        recno = -1;
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                buffer[i][j] = '\0';
+            }
+        }
+        record_number = -1;
     }
 
-    Record(const char* str) { strcpy(record, str); }
+    // Record(char data[ROWS][COLS]) {
+    //     for (int i = 0; i < ROWS; i++) {
+    //         strcpy(record[i], data[i]);
+    //     }
+    // }
     long write(std::fstream& outs);
-    long read(std::fstream& ins, long recno);
+    long read(std::fstream& ins, long record_number);
+
+    // writes a row to the first null row in the buffer
+    // returns true if successfully written, false if buffer is full
+    bool write_row(const char* str);
 
     friend std::ostream& operator<<(std::ostream& outs, const Record& r);
 
-private:
-    static const int MAX = 10;
-    int recno;
-    char record[MAX];
 };
-long Record::write(std::fstream& outs) {
-    // write to the end of the file.
-    long pos = outs.tellp();
 
-    outs.write(record, sizeof(record));
-
-    return pos;
-}
-long Record::read(std::fstream& ins, long recno) {
-    long pos = recno * sizeof(record);
-    ins.seekg(pos, std::ios_base::beg);
-
-    ins.read(record, sizeof(record));
-    return ins.gcount();
-}
-std::ostream& operator<<(std::ostream& outs, const Record& r) {
-    outs << r.record;
-    return outs;
-}
-
-void save_list(Record list[], int count) {
+void save_list(Record* list, int count) {
     std::fstream f;
-    open_fileW(f, "record_list.bin");
+    binary_fio::open_fileW(f, "record_list.bin");
     for (int i = 0; i < count; i++) {
         list[i].write(f);
     }
