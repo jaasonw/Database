@@ -19,11 +19,6 @@ public:
         record_number = -1;
     }
 
-    // Record(char data[ROWS][COLS]) {
-    //     for (int i = 0; i < ROWS; i++) {
-    //         strcpy(record[i], data[i]);
-    //     }
-    // }
     long write(std::fstream& outs);
     long read(std::fstream& ins, long record_number);
 
@@ -32,12 +27,11 @@ public:
     bool write_row(const char* str);
 
     friend std::ostream& operator<<(std::ostream& outs, const Record& r);
-
 };
 
 void save_list(Record* list, int count) {
     std::fstream f;
-    binary_fio::open_fileW(f, "record_list.bin");
+    bin_io::open_fileW(f, "record_list.bin");
     for (int i = 0; i < count; i++) {
         list[i].write(f);
     }

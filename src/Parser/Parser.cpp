@@ -1,5 +1,7 @@
 #include "Parser/Parser.h"
 
+Parser::Parser(std::string input) { set_string(input); }
+
 void Parser::set_string(std::string input) {
     tokens.clear();
     tokenizer.set_string(input.c_str());
@@ -19,8 +21,11 @@ MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
     int last_state = sql_state.get_state();
     while (!tokens.empty()) {
         string_tokenizer::Token t = tokens.pop();
-        while (isspace(t.token_str()[0])) {
+        while (!tokens.empty() && isspace(t.token_str()[0])) {
             t = tokens.pop();
+        }
+        if (tokens.empty()) {
+            throw std::runtime_error("Error: unexpected end of input");
         }
         std::string token_string = "";
         token_string = t.token_str();

@@ -27,7 +27,3 @@ public:
     // converts the command into a parse tree
     MultiMap::MultiMap<std::string, std::string> parse(std::string input);
 };
-
-Parser::Parser(std::string input) {
-    set_string(input);
-}

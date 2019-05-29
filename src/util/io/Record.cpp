@@ -9,8 +9,8 @@ long Record::write(std::fstream& outs) {
     }
     return pos;
 }
-long Record::read(std::fstream& ins, long recno) {
-    ins.seekg(ROWS * COLS * recno);
+long Record::read(std::fstream& ins, long record_number) {
+    ins.seekg(ROWS * COLS * record_number);
     for (int i = 0; i < ROWS; ++i) {
         ins.read(buffer[i], sizeof(buffer));
     }
