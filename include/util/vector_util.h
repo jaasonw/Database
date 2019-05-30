@@ -5,7 +5,6 @@
 // print vector list
 template <typename T>
 std::ostream& operator<<(std::ostream& outs, const std::vector<T>& list) {
-    b_array::print_array(&list[0], list.size(), 0, outs);
     outs << '[' << ' ';
     for (size_t i = 0; i < list.size(); i++) {
         outs << list[i] << " ";
