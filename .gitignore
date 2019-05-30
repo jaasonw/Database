@@ -4,3 +4,5 @@
 z_work_report.h
 tree_dump.txt
 ~$state_table.xlsx
+*.db
+*.db.bak
