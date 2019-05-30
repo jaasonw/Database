@@ -19,20 +19,5 @@ public:
     bool db_open();
     void db_close();
     void insert_into(const std::vector<std::string>& items);
+    void select(const char* fields);
 };
-
-Table::Table(const char* name) : name(name) {}
-
-bool Table::db_open() {
-    const char* filename = (name + ".db").c_str();
-    // const char* filename_fields = (name + "_fields.db").c_str();
-    bin_io::open_fileRW(file_stream, filename);
-    // if file is not empty
-    if (file_stream.peek() != std::ifstream::traits_type::eof()) {
-        Record index_block;
-        index_block.read(file_stream, 0);
-    }
-    return file_stream.fail();
-}
-
-void Table::insert_into(const std::vector<std::string>& items) {}

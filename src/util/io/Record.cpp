@@ -5,14 +5,14 @@ long Record::write(std::fstream& outs) {
     long pos = outs.tellp();
 
     for (int i = 0; i < ROWS; ++i) {
-        outs.write(buffer[i], sizeof(buffer));
+        outs.write(buffer[i], COLS);
     }
     return pos;
 }
 long Record::read(std::fstream& ins, long record_number) {
     ins.seekg(ROWS * COLS * record_number);
     for (int i = 0; i < ROWS; ++i) {
-        ins.read(buffer[i], sizeof(buffer));
+        ins.read(buffer[i], COLS);
     }
     return ins.gcount();
 }
