@@ -17,7 +17,9 @@ public:
 
     // opens the db into the file stream, loads the fields and indexes the db
     bool db_open();
+    // closes the db
     void db_close();
     void insert_into(std::string items);
+    // returns a vector of entries satisfying the query
     std::vector<std::vector<std::string>> select(std::string query);
 };

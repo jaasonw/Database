@@ -13,9 +13,6 @@ using namespace std;
 int main(int argc, char const* argv[]) {
     Parser p("");
     string command;
-    // Table t("students");
-    // t.db_open();
-    // t.select("*");
     while (true) {
         cout << "Enter an sql command: ";
         getline(cin, command);
@@ -26,6 +23,7 @@ int main(int argc, char const* argv[]) {
                 Table t(parse_tree["table_name"][0]);
                 t.db_open();
                 cout << t.select(parse_tree["fields"][0]) << '\n';
+                t.db_close();
             }
         }
         catch (std::runtime_error e) {

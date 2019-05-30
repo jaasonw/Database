@@ -15,6 +15,8 @@ bool Table::db_open() {
     return file_stream.fail();
 }
 
+void Table::db_close() { file_stream.close(); }
+
 void Table::insert_into(std::string items) {}
 
 std::vector<std::vector<std::string>> Table::select(std::string query) {
