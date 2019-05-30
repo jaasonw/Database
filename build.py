@@ -54,9 +54,9 @@ include_str = ""
 
 for top_level_directory in INCLUDES:
     include_str += f"-I\"{top_level_directory}/\" "
-    for root, directories, filenames in os.walk(top_level_directory):
-        for directory in directories:
-            include_str += f"-I\"{os.path.join(root, directory)}/\" "
+    # for root, directories, filenames in os.walk(top_level_directory):
+    #     for directory in directories:
+    #         include_str += f"-I\"{os.path.join(root, directory)}/\" "
 
 sources_str = ""
 
