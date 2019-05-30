@@ -19,7 +19,7 @@ bool file_exists(const char* filename) {
     return true;
 }
 
-void open_fileRW(std::fstream& f, const char* filename) throw(char*) {
+void open_fileRW(std::fstream& f, const char* filename) {
     const bool debug = false;
     // openning a nonexistent file for in|out|app causes a fail()
     //  so, if the file does not exist, create it by openning it for
