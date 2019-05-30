@@ -1,5 +1,14 @@
 #include "util/io/Record.h"
 
+Record::Record() {
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            buffer[i][j] = '\0';
+        }
+    }
+    record_number = -1;
+}
+
 long Record::write(std::fstream& outs) {
     // write to the end of the file.
     long pos = outs.tellp();
@@ -10,6 +19,7 @@ long Record::write(std::fstream& outs) {
     return pos;
 }
 long Record::read(std::fstream& ins, long record_number) {
+    this->record_number = record_number;
     ins.seekg(ROWS * COLS * record_number);
     for (int i = 0; i < ROWS; ++i) {
         ins.read(buffer[i], COLS);
@@ -34,4 +44,14 @@ bool Record::write_row(const char* str) {
         }
     }
     return false;
+}
+
+std::vector<std::string> Record::to_vector() {
+    std::vector<std::string> row;
+    for (int i = 0; i < ROWS && buffer[i][0] != '\0'; i++) {
+        char field[COLS] = "";
+        strcpy(field, buffer[i]);
+        row.push_back(field);
+    }
+    return row;
 }

@@ -13,11 +13,11 @@ private:
     std::fstream file_stream;
 
 public:
-    Table(const char* name);
+    Table(std::string name);
 
     // opens the db into the file stream, loads the fields and indexes the db
     bool db_open();
     void db_close();
-    void insert_into(const std::vector<std::string>& items);
-    void select(const char* fields);
+    void insert_into(std::string items);
+    std::vector<std::vector<std::string>> select(std::string query);
 };

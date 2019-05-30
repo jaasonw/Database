@@ -1,6 +1,6 @@
 #include "Table.h"
 
-Table::Table(const char* name) : name(name) {}
+Table::Table(std::string name) : name(name) {}
 
 bool Table::db_open() {
     const char* filename = (name + ".db").c_str();
@@ -10,14 +10,22 @@ bool Table::db_open() {
     if (file_stream.peek() != std::ifstream::traits_type::eof()) {
         Record index_block;
         index_block.read(file_stream, 0);
-        for (int i = 0; i < index_block.ROWS && index_block.buffer[i][0] != '\0'; i++) {
-            char field[index_block.COLS] = "";
-            strcpy(field, index_block.buffer[i]);
-            fields.push_back(field);
-        }
+        fields = index_block.to_vector();
     }
-    std::cout << fields << '\n';
     return file_stream.fail();
 }
 
-void Table::insert_into(const std::vector<std::string>& items) {}
+void Table::insert_into(std::string items) {}
+
+std::vector<std::vector<std::string>> Table::select(std::string query) {
+    std::vector<std::vector<std::string>> container;
+    // this might need to be replaced with something else later
+    if (query == "*") {
+        Record block;
+        // start at 1 because the first block is for fields
+        for (int i = 1; block.read(file_stream, i) > 0; i++) {
+            container.push_back(block.to_vector());
+        }
+    }
+    return container;
+}
