@@ -7,7 +7,10 @@ template <typename T>
 std::ostream& operator<<(std::ostream& outs, const std::vector<T>& list) {
     outs << '[' << ' ';
     for (size_t i = 0; i < list.size(); i++) {
-        outs << list[i] << " ";
+        outs << list[i];
+        if (i < list.size() - 1)
+            outs << ',';
+        outs << ' ';
     }
     outs << ']';
     return outs;
