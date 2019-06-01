@@ -18,11 +18,11 @@ struct Record {
     // writes a row to the first null row in the buffer
     // returns true if successfully written, false if buffer is full
     bool write_row(const char* str);
+    void clear_buffer();
 
     std::vector<std::string> to_vector();
 
     friend std::ostream& operator<<(std::ostream& outs, const Record& r);
-
 
 };
 
