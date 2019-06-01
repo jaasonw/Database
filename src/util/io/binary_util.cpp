@@ -37,7 +37,7 @@ void open_fileRW(std::fstream& f, const char* filename) {
         }
     } else {
         f.open(filename,
-               std::fstream::in | std::fstream::out | std::fstream::binary);
+               std::fstream::in | std::fstream::out | std::fstream::binary | std::ios::app);
         if (f.fail()) {
             std::cout << "file open (RW) failed. [" << filename << "]"
                       << std::endl;
@@ -46,7 +46,7 @@ void open_fileRW(std::fstream& f, const char* filename) {
     }
 }
 void open_fileW(std::fstream& f, const char filename[]) {
-    f.open(filename, std::fstream::out | std::fstream::binary);
+    f.open(filename, std::fstream::out | std::fstream::binary | std::ios::app);
     if (f.fail()) {
         std::cout << "file open failed: " << filename << std::endl;
         throw std::runtime_error("file failed to open.");
