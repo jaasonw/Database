@@ -1,11 +1,7 @@
 #include "util/io/Record.h"
 
 Record::Record() {
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLS; j++) {
-            buffer[i][j] = '\0';
-        }
-    }
+    clear_buffer();
     record_number = -1;
 }
 
@@ -16,9 +12,11 @@ long Record::write(std::fstream& outs) {
     for (int i = 0; i < ROWS; ++i) {
         outs.write(buffer[i], COLS);
     }
+    // return the position the block was just writen to
     return pos;
 }
 long Record::read(std::fstream& ins, long record_number) {
+    clear_buffer();
     this->record_number = record_number;
     ins.seekg(ROWS * COLS * record_number);
     for (int i = 0; i < ROWS; ++i) {
@@ -28,7 +26,7 @@ long Record::read(std::fstream& ins, long record_number) {
 }
 std::ostream& operator<<(std::ostream& outs, const Record& r) {
     for (int i = 0; i < r.ROWS; ++i) {
-        for (int j = 0; j < r.COLS; j++) {
+        for (int j = 0; j < r.COLS; ++j) {
             outs << r.buffer[i][j];
         }
         outs << '\n';
@@ -48,10 +46,18 @@ bool Record::write_row(const char* str) {
 
 std::vector<std::string> Record::to_vector() {
     std::vector<std::string> row;
-    for (int i = 0; i < ROWS && buffer[i][0] != '\0'; i++) {
+    for (int i = 0; i < ROWS && buffer[i][0] != '\0'; ++i) {
         char field[COLS] = "";
         strcpy(field, buffer[i]);
         row.push_back(field);
     }
     return row;
+}
+
+void Record::clear_buffer() {
+    for (int i = 0; i < ROWS; ++i) {
+        for (int j = 0; j < COLS; ++j) {
+            buffer[i][j] = '\0';
+        }
+    }
 }
