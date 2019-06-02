@@ -23,11 +23,8 @@ bool Table::db_read() {
         index_block.read(file_stream, 0);
         columns = index_block.to_vector();
     }
-    // if the file is empty, probably means we're creating a new db
-    // so add the fields
-    open = !file_stream.fail();
     file_stream.close();
-    return open;
+    return !file_stream.fail();
 }
 
 void Table::insert_into(const std::vector<std::string>& fields) {
