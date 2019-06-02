@@ -10,11 +10,12 @@
 using namespace std;
 
 int main(int argc, char const* argv[]) {
-    // Parser p("");
     SQL sql;
-    // Table t("students");
     sql.interactive();
-    // cout << t; 
+
+    // this is the end of the session, remove the temp file
+    remove("temp.db");
+
     cout << endl;
     system("pause");
     return 0;
