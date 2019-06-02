@@ -55,27 +55,55 @@ void Table::select(const std::vector<std::string>& fields,
             temp.insert_into(r.to_vector());
         }
     }
+    else {
+        std::vector<int> column_indices;
+        // really bad search algorithm but lazy and should work for small sets
+        for (size_t i = 0; i < fields.size(); i++) {
+            bool found = false;
+            for (int j = 0; j < columns.size(); j++) {
+                if (columns[j] == fields[i]) {
+                    column_indices.push_back(j);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+                throw std::runtime_error("Error: Invalid name: " + fields[i]);
+        }
+        Table temp("temp", fields);
+
+        Record r;
+        for (long i = 1; r.read(file_stream, i) > 0; ++i) {
+            r.read(file_stream, i);
+            std::vector<std::string> temp_row;
+
+            for (size_t j = 0; j < column_indices.size(); ++j) {
+                temp_row.push_back(r.buffer[column_indices[j]]);
+            }
+            temp.insert_into(temp_row);
+        }
+
+    }
     file_stream.close();
 }
 
 std::ostream& operator<<(std::ostream& outs, Table& table) {
-    const int SPACING = 20;
     std::fstream file_stream;
     bin_io::open_fileRW(file_stream, table.get_filename());
     for (auto e : table.columns) {
-        outs << std::setw(SPACING) << std::left;
+        outs << std::setw(constants::MAX_BLOCK_COLS) << std::left;
         outs << e;
     }
     outs << '\n';
-    outs << std::string(80, '-');
+    outs << std::string(table.columns.size() * constants::MAX_BLOCK_COLS, '-');
     outs << '\n';
 
     Record r;
-    for (int i = 1; r.read(file_stream, i) > 0; ++i) {
+    for (long i = 1; r.read(file_stream, i) > 0; ++i) {
         r.read(file_stream, i);
         auto row = r.to_vector();
-        for (int j = 0; j < row.size(); ++j) {
-            outs << std::setw(SPACING) << std::left;
+        for (size_t j = 0; j < row.size(); ++j) {
+            outs << std::setw(constants::MAX_BLOCK_COLS) << std::left;
             outs << row[j];
         }
         outs << '\n';
