@@ -9,7 +9,9 @@ void Parser::set_string(std::string input) {
         tokens.push(t);
     }
     combine_quotes();
-    std::cout << tokens << std::endl;
+    #ifdef DEBUG
+        std::cout << tokens << std::endl;
+    #endif
 }
 
 MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {

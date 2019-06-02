@@ -24,7 +24,9 @@ void SQL::interactive() {
         getline(std::cin, command);
         try {
             auto parse_tree = parser.parse(command);
-            std::cout << parse_tree << '\n';
+            #ifdef DEBUG
+                std::cout << parse_tree << '\n';
+            #endif
             // select
             if (parse_tree["command"][0] == "select") {
                 Table t(parse_tree["table_name"][0]);

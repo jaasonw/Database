@@ -1,4 +1,5 @@
 #pragma once
+// #define DEBUG
 
 // global constants go here
 namespace constants {

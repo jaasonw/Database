@@ -3,22 +3,22 @@
 namespace bin_io {
 
 bool file_exists(const char* filename) {
-    const bool debug = false;
     std::fstream ff;
     ff.open(filename, std::fstream::in | std::fstream::binary);
     if (ff.fail()) {
-        if (debug)
+        #ifdef DEBUG
             std::cout << "file_exists(): File does NOT exist: " << filename << std::endl;
+        #endif
         return false;
     }
-    if (debug)
+    #ifdef DEBUG
         std::cout << "file_exists(): File DOES exist: " << filename << std::endl;
+    #endif
     ff.close();
     return true;
 }
 
 void open_fileRW(std::fstream& f, const char* filename) {
-    const bool debug = false;
     // openning a nonexistent file for in|out|app causes a fail()
     //  so, if the file does not exist, create it by openning it for
     //  output:
@@ -29,9 +29,10 @@ void open_fileRW(std::fstream& f, const char* filename) {
                  << std::endl;
             throw std::runtime_error("file RW failed  ");
         } else {
-            if (debug)
+            #ifdef DEBUG
                 std::cout << "open_fileRW: file created successfully: " << filename
                      << std::endl;
+            #endif
         }
     } else {
         f.open(filename,
