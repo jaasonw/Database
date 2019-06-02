@@ -5,15 +5,24 @@ Record::Record() {
     record_number = -1;
 }
 
-long Record::write(std::fstream& outs) {
+long Record::append_to_file(std::fstream& outs) {
     // write to the end of the file.
     long pos = outs.tellp();
+    outs.seekp(0, std::ios::end);
+
+    for (int i = 0; i < ROWS; i++) {
+        outs.write(buffer[i], COLS);
+    }
+
+    return pos;
+}
+
+void Record::write(std::fstream& outs, long index) {
+    outs.seekp(ROWS * COLS * index, std::ios::beg);
 
     for (int i = 0; i < ROWS; ++i) {
         outs.write(buffer[i], COLS);
     }
-    // return the position the block was just writen to
-    return pos;
 }
 long Record::read(std::fstream& ins, long record_number) {
     clear_buffer();
@@ -59,5 +68,14 @@ void Record::clear_buffer() {
         for (int j = 0; j < COLS; ++j) {
             buffer[i][j] = '\0';
         }
+    }
+}
+void Record::create_from_vector(const std::vector<std::string>& items) {
+    clear_buffer();
+    if (items.size() > COLS) {
+        throw std::runtime_error("Error: max number of items exceeded");
+    }
+    for (int i = 0; i < items.size(); ++i) {
+        write_row(items.at(i).c_str());
     }
 }

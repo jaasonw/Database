@@ -63,16 +63,11 @@ SQLStateMachine::SQLStateMachine() {
     state_machine::mark_cell(1, state_table, sql_parser::STRING, 3);
     state_machine::mark_cell(4, state_table, sql_parser::STRING, 3);
     state_machine::mark_cell(5, state_table, sql_parser::STRING, 6);
-    // state_machine::mark_cell(7, state_table, sql_parser::STRING, 6);
     state_machine::mark_cell(8, state_table, sql_parser::STRING, 9);
     state_machine::mark_cell(10, state_table, sql_parser::STRING, 11);
     state_machine::mark_cell(12, state_table, sql_parser::STRING, 9);
 
     state_machine::mark_cell(3, state_table, sql_parser::COMMA, 4);
-    // state_machine::mark_cell(6, state_table, sql_parser::COMMA, 7);
-
-
-    // state_machine::mark_cell(26, state_table, sql_parser::COMMA, 27);
 
     state_machine::mark_cell(2, state_table, sql_parser::FROM, 5);
     state_machine::mark_cell(3, state_table, sql_parser::FROM, 5);
