@@ -7,8 +7,8 @@ Record::Record() {
 
 long Record::append_to_file(std::fstream& outs) {
     // write to the end of the file.
-    long pos = outs.tellp();
     outs.seekp(0, std::ios::end);
+    long pos = outs.tellp();
 
     for (int i = 0; i < ROWS; i++) {
         outs.write(buffer[i], COLS);
@@ -75,7 +75,7 @@ void Record::create_from_vector(const std::vector<std::string>& items) {
     if (items.size() > COLS) {
         throw std::runtime_error("Error: max number of items exceeded");
     }
-    for (int i = 0; i < items.size(); ++i) {
+    for (size_t i = 0; i < items.size(); ++i) {
         write_row(items.at(i).c_str());
     }
 }
