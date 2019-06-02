@@ -25,7 +25,7 @@ void open_fileRW(std::fstream& f, const char* filename) {
     //  so, if the file does not exist, create it by openning it for
     //  output:
     if (!file_exists(filename)) {
-        f.open(filename, std::fstream::out | std::fstream::binary);
+        f.open(filename, std::fstream::out | std::fstream::binary | std::ios::app);
         if (f.fail()) {
             std::cout << "file open (RW) failed: with out|" << filename << "]"
                       << std::endl;
