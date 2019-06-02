@@ -15,8 +15,8 @@ private:
     std::vector<std::string> columns;
     //std::vector<MultiMap::MultiMap<std::string, long>> indices;
 
-    // returns a cstring with the filename
-    const char* get_filename();
+    // returns a string with the filename
+    std::string get_filename();
 
     // opens the db into the file stream, loads the fields and indexes the db
     bool db_read();

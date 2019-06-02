@@ -16,7 +16,7 @@ Table::Table(std::string name, const std::vector<std::string>& columns) {
 
 bool Table::db_read() {
     std::fstream file_stream;
-    bin_io::open_fileRW(file_stream, get_filename());
+    bin_io::open_fileRW(file_stream, get_filename().c_str());
     // if file is not empty
     if (file_stream.peek() != std::ifstream::traits_type::eof()) {
         Record index_block;
@@ -28,10 +28,10 @@ bool Table::db_read() {
 }
 
 void Table::insert_into(const std::vector<std::string>& fields) {
-    if(!bin_io::file_exists(get_filename()))
+    if(!bin_io::file_exists(get_filename().c_str()))
         throw std::runtime_error("Error: cannot find specified table");
     std::fstream f;
-    bin_io::open_fileW(f, get_filename());
+    bin_io::open_fileW(f, get_filename().c_str());
     if (fields.size() != columns.size()) {
         throw std::runtime_error("Error: mismatched column number");
     }
@@ -44,7 +44,7 @@ void Table::insert_into(const std::vector<std::string>& fields) {
 void Table::select(const std::vector<std::string>& fields,
                    const std::vector<std::string>& where) {
     std::fstream file_stream;
-    bin_io::open_fileRW(file_stream, get_filename());
+    bin_io::open_fileRW(file_stream, get_filename().c_str());
     // this might need to be replaced with something else later
     if (fields[0] == "*") {
         Table temp("temp", columns);
@@ -89,7 +89,7 @@ void Table::select(const std::vector<std::string>& fields,
 
 std::ostream& operator<<(std::ostream& outs, Table& table) {
     std::fstream file_stream;
-    bin_io::open_fileRW(file_stream, table.get_filename());
+    bin_io::open_fileRW(file_stream, table.get_filename().c_str());
     for (auto e : table.columns) {
         outs << std::setw(constants::MAX_BLOCK_COLS) << std::left;
         outs << e;
@@ -113,10 +113,10 @@ std::ostream& operator<<(std::ostream& outs, Table& table) {
 }
 
 void Table::init_file() {
-    remove(get_filename());
+    remove(get_filename().c_str());
     // write fields to a block
     std::fstream f;
-    bin_io::open_fileW(f, get_filename());
+    bin_io::open_fileW(f, get_filename().c_str());
     Record r;
     r.create_from_vector(columns);
     // write block to beginning of the file
@@ -124,4 +124,4 @@ void Table::init_file() {
     f.close();
 }
 
-const char* Table::get_filename() { return (name + ".db").c_str(); }
+std::string Table::get_filename() { return (name + ".db"); }
