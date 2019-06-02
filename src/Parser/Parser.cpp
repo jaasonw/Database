@@ -33,19 +33,26 @@ MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
                                          token_string);
                 break;
             case 1:
-            case 12:
-            case 18:
+            case 13:
+            case 20:
                 parse_tree["command"] += token_string;
                 break;
             case 2:
             case 3:
-            case 16:
+            case 17:
+            case 25:
                 parse_tree["fields"] += token_string;
                 break;
             case 6:
-            case 14:
-            case 20:
+            case 15:
+            case 22:
                 parse_tree["table_name"] += token_string;
+                break;
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+                parse_tree["where"] += token_string;
                 break;
         }
     }
