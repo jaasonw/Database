@@ -16,10 +16,11 @@ public:
     public:
         friend class Map;
 
-        Iterator(typename BPlusTree<Pair<Key, T>>::Iterator it) {}
+        Iterator(typename BPlusTree<Pair<Key, T>>::Iterator it)
+            : tree_iter(it) {}
 
         T operator*() { return *tree_iter; }
-        T* operator->() { return tree_iter.operator->(); }
+        T* operator->() { return &tree_iter.operator->()->value; }
 
         // i++
         Iterator operator++(int) {
@@ -38,23 +39,25 @@ public:
             return left.tree_iter == right.tree_iter;
         }
         friend bool operator!=(const Iterator& left, const Iterator& right) {
-            return left.iter != right.iter;
+            return left.tree_iter != right.tree_iter;
         }
         // compare to items
         friend bool operator==(const Iterator& left, const T& right) {
-            return *(left.iter) == right;
+            return *(left.tree_iter) == right;
         }
         friend bool operator!=(const Iterator& left, const T& right) {
-            return *(left.iter) != right;
+            return *(left.tree_iter) != right;
         }
         // compare to null
         friend bool operator==(const Iterator& left, std::nullptr_t) {
-            return left.iter == nullptr;
+            return left.tree_iter == nullptr;
         }
         friend bool operator!=(const Iterator& left, std::nullptr_t) {
-            return left.iter != nullptr;
+            return left.tree_iter != nullptr;
         }
         bool is_null() { return !tree_iter; }
+
+        Key key() { return tree_iter->key; }
     };
 
     Map();
@@ -141,7 +144,7 @@ bool Map<Key, T>::contains(const Key& key) {
 
 template <typename Key, typename T>
 typename Map<Key, T>::Iterator Map<Key, T>::begin() const {
-    Iterator(tree.begin());
+    return Iterator(tree.begin());
 }
 
 template <typename Key, typename T>

@@ -723,7 +723,7 @@ template <typename T>
 typename BPlusTree<T>::Iterator BPlusTree<T>::begin() const {
     auto node = get_smallest_node();
     if (node->data_size == 0)
-        return Iterator(nullptr);
+        return Iterator(nullptr, 0);
     return Iterator(node);
 }
 
