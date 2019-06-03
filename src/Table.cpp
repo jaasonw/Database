@@ -1,12 +1,20 @@
 #include "Table.h"
 
 Table::Table(std::string name) : name(name) {
+    // this shouldnt call on a nonexistent table
+    if (!bin_io::file_exists(get_filename().c_str()))
+        throw std::runtime_error(CANNOT_FIND_TABLE);
     db_read();
 }
 Table::Table(std::string name, const std::vector<std::string>& columns) {
     // the technology isnt there for this yet :)
     if (columns.size() > constants::MAX_BLOCK_ROWS) {
-        throw std::runtime_error("Error: Max number of fields exceeded");
+        throw std::runtime_error(MAX_FIELD_EXCEEDED);
+    }
+    // check field lengths, because the technology isnt here for this yet
+    for (size_t i = 0; i < columns.size(); ++i) {
+        if (columns[i].size() >= constants::MAX_BLOCK_COLS)
+            throw std::runtime_error(MAX_FIELD_SIZE_EXCEEDED + columns[i]);
     }
     this->name = name;
     this->columns = columns;
@@ -23,17 +31,24 @@ bool Table::db_read() {
         index_block.read(file_stream, 0);
         columns = index_block.to_vector();
     }
+    reindex();
+    // std::cout << index << '\n';
     file_stream.close();
     return !file_stream.fail();
 }
 
 void Table::insert_into(const std::vector<std::string>& fields) {
+    // check field lengths, because the technology isnt here for this yet
+    for (size_t i = 0; i < fields.size(); ++i) {
+        if (fields[i].size() >= constants::MAX_BLOCK_COLS)
+            throw std::runtime_error(MAX_FIELD_SIZE_EXCEEDED + fields[i]);
+    }
     if(!bin_io::file_exists(get_filename().c_str()))
-        throw std::runtime_error("Error: cannot find specified table");
+        throw std::runtime_error(CANNOT_FIND_TABLE);
     std::fstream f;
     bin_io::open_fileW(f, get_filename().c_str());
     if (fields.size() != columns.size()) {
-        throw std::runtime_error("Error: mismatched column number");
+        throw std::runtime_error(MISMATCHED_COL_NUM);
     }
     Record r;
     r.create_from_vector(fields);
@@ -43,6 +58,8 @@ void Table::insert_into(const std::vector<std::string>& fields) {
 
 void Table::select(const std::vector<std::string>& fields,
                    const std::vector<std::string>& where) {
+    if (!bin_io::file_exists(get_filename().c_str()))
+        throw std::runtime_error(CANNOT_FIND_TABLE);
     std::fstream file_stream;
     bin_io::open_fileRW(file_stream, get_filename().c_str());
     // this might need to be replaced with something else later
@@ -68,7 +85,7 @@ void Table::select(const std::vector<std::string>& fields,
                 }
             }
             if (!found)
-                throw std::runtime_error("Error: Invalid name: " + fields[i]);
+                throw std::runtime_error(INVALID_NAME + fields[i]);
         }
         Table temp("temp", fields);
 
@@ -99,14 +116,18 @@ std::ostream& operator<<(std::ostream& outs, Table& table) {
     outs << '\n';
 
     Record r;
-    for (long i = 1; r.read(file_stream, i) > 0; ++i) {
-        r.read(file_stream, i);
-        auto row = r.to_vector();
-        for (size_t j = 0; j < row.size(); ++j) {
-            outs << std::setw(constants::MAX_BLOCK_COLS) << std::left;
-            outs << row[j];
+    // sort by first column
+    auto sorted = table.index[table.columns[0]];
+    for (auto it = sorted.begin(); it != nullptr; ++it) {
+        for (size_t i = 0; i < it->size(); ++i) {
+            r.read(file_stream, it->at(i));
+            auto row = r.to_vector();
+            for (size_t j = 0; j < row.size(); ++j) {
+                outs << std::setw(constants::MAX_BLOCK_COLS) << std::left;
+                outs << row[j];
+            }
+            outs << '\n';
         }
-        outs << '\n';
     }
     file_stream.close();
     return outs;
@@ -125,3 +146,18 @@ void Table::init_file() {
 }
 
 std::string Table::get_filename() { return (name + ".db"); }
+
+void Table::reindex() {
+    std::fstream file_stream;
+    file_stream.open(get_filename());
+    Record r;
+    for (long i = 1; r.read(file_stream, i) > 0; ++i) {
+        r.read(file_stream, i);
+        auto row = r.to_vector();
+        MultiMap::MultiMap<std::string, long> mmap;
+        for (size_t j = 0; j < columns.size(); ++j) {
+            index[columns[j]].insert(row[j], i);
+        }
+    }
+    file_stream.close();
+}
