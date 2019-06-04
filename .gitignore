@@ -6,3 +6,6 @@ tree_dump.txt
 ~$state_table.xlsx
 *.db
 *.db.bak
+_todo.txt
+*.sql
+tables.txt

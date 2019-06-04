@@ -1,7 +1,0 @@
-todo:
-where stuff, glue operators together
-index structures
-sql class
-    [x] writing files
-    [x] change select command to create a new table
-    
