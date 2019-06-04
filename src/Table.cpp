@@ -7,7 +7,6 @@ Table::Table(std::string name) : name(name) {
         throw std::runtime_error(CANNOT_FIND_TABLE);
     db_read();
     reindex();
-    // std::cout << index << '\n';
 }
 Table::Table(std::string name, const std::vector<std::string>& columns) {
     // the technology isnt there for this yet :)

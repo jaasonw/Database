@@ -21,6 +21,10 @@ SQLStateMachine::SQLStateMachine() {
     keywords[">="] = sql_parser::RELATIONAL_OPERATOR;
     keywords["AND"] = sql_parser::LOGICAL_OPERATOR;
     keywords["OR"] = sql_parser::LOGICAL_OPERATOR;
+    #ifdef ENABLE_NON_STANDARD_SQL
+        keywords["MAKE"] = sql_parser::CREATE;
+        keywords["FIELDS"] = sql_parser::FIELDS;
+    #endif
 
     // init state table
     state_machine::init_table(state_table);
@@ -53,6 +57,12 @@ SQLStateMachine::SQLStateMachine() {
     state_machine::mark_fail(state_table, 26);
     state_machine::mark_success(state_table, 27);
     state_machine::mark_fail(state_table, 28);
+    #ifdef ENABLE_NON_STANDARD_SQL
+        // insert command parenthesis skipping
+        state_machine::mark_success(state_table, 25);
+        // create command parenthesis skipping
+        state_machine::mark_success(state_table, 17);
+    #endif
 
     // mark cells
     // command: select
@@ -108,6 +118,14 @@ SQLStateMachine::SQLStateMachine() {
     state_machine::mark_cell(25, state_table, sql_parser::COMMA, 26);
 
     state_machine::mark_cell(22, state_table, sql_parser::VALUES, 23);
+
+    #ifdef ENABLE_NON_STANDARD_SQL
+        // insert command parenthesis skipping
+        state_machine::mark_cell(23, state_table, sql_parser::STRING, 25);
+        // create command field keyword
+        state_machine::mark_cell(15, state_table, sql_parser::FIELDS, 28);
+        state_machine::mark_cell(28, state_table, sql_parser::STRING, 17);
+    #endif
 }
 
 int SQLStateMachine::update_state(std::string token) {

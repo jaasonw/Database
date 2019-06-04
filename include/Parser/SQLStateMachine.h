@@ -1,8 +1,9 @@
 #pragma once
 #include "Map/Map.h"
 #include "Parser/keywords.h"
-#include "StringTokenizer/state_machine/state_table.h"
 #include "StringTokenizer/Token.h"
+#include "StringTokenizer/state_machine/state_table.h"
+#include "constants.h"
 #include <cctype>
 #include <string>
 

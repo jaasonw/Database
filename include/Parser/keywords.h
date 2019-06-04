@@ -1,4 +1,5 @@
 #pragma once
+#include "constants.h"
 
 namespace sql_parser {
 
@@ -19,6 +20,9 @@ enum Keyword {
     CLOSE_PARENTH,
     RELATIONAL_OPERATOR,
     LOGICAL_OPERATOR
+    #ifdef ENABLE_NON_STANDARD_SQL
+        ,FIELDS
+    #endif
 };
 
 }
