@@ -58,7 +58,6 @@ void Table::insert_into(const std::vector<std::string>& fields) {
     for (size_t i = 0; i < columns.size(); ++i) {
         index[columns[i]][r.buffer[i]] += record_number;
     }
-    std::cout << index << '\n';
     f.close();
 }
 
