@@ -15,14 +15,17 @@ private:
     std::string name;
     
     std::vector<std::string> columns;
+    Map::Map<std::string, size_t> column_map;
     Index index;
 
     // returns a string with the filename
     std::string get_filename();
 
-    // opens the db into the file stream, loads the fields and indexes the db
+    // reads the field data from the database
     bool db_read();
 
+    // iterates through the entire file and indexes the database
+    // should only be run once, when the table is initialized
     void reindex();
 
     // just a bunch of error message constants, don't mind these

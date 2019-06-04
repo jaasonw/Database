@@ -34,6 +34,10 @@ bool Table::db_read() {
         index_block.read(file_stream, 0);
         columns = index_block.to_vector();
     }
+    // map the columns to make selecting them easier later on
+    for (size_t i = 0; i < columns.size(); ++i) {
+        column_map[columns[i]] = i;
+    }
     file_stream.close();
     return !file_stream.fail();
 }
@@ -78,20 +82,6 @@ void Table::select(const std::vector<std::string>& fields,
         }
     }
     else {
-        std::vector<int> column_indices;
-        // really bad search algorithm but lazy and should work for small sets
-        for (size_t i = 0; i < fields.size(); i++) {
-            bool found = false;
-            for (int j = 0; j < columns.size(); j++) {
-                if (columns[j] == fields[i]) {
-                    column_indices.push_back(j);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found)
-                throw std::runtime_error(INVALID_NAME + fields[i]);
-        }
         Table temp("temp", fields);
 
         Record r;
@@ -99,8 +89,8 @@ void Table::select(const std::vector<std::string>& fields,
             r.read(file_stream, i);
             std::vector<std::string> temp_row;
 
-            for (size_t j = 0; j < column_indices.size(); ++j) {
-                temp_row.push_back(r.buffer[column_indices[j]]);
+            for (size_t j = 0; j < fields.size(); ++j) {
+                temp_row.push_back(r.buffer[column_map[fields[j]]]);
             }
             temp.insert_into(temp_row);
         }
