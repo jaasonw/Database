@@ -22,6 +22,8 @@ private:
     void set_string(std::string input);
     // combines words in between quotes into 1 token
     void combine_quotes();
+    // combine < and > with = operators
+    void combine_operators();
 public:
     Parser() { set_string(""); };
     Parser(std::string input) { set_string(input); };

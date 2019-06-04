@@ -9,6 +9,7 @@ void Parser::set_string(std::string input) {
         tokens.push(t);
     }
     combine_quotes();
+    combine_operators();
     #ifdef DEBUG
         std::cout << tokens << std::endl;
     #endif
@@ -65,6 +66,9 @@ MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
     if (sql_state.is_invalid() || !sql_state.is_success()) {
         throw std::runtime_error("Error: unexpected end of input");
     }
+    #ifdef DEBUG
+        std::cout << parse_tree << std::endl;
+    #endif
     return parse_tree;
 }
 
@@ -89,6 +93,27 @@ void Parser::combine_quotes() {
         } else {
             _tokens.push(current_token);
         }
+    }
+    tokens = _tokens;
+}
+void Parser::combine_operators() {
+    Queue<string_tokenizer::Token> _tokens;
+    while (!tokens.empty()) {
+        auto current_token = tokens.pop();
+        std::string current_token_str = current_token.token_str();
+        if (current_token_str[0] == '<' || current_token_str[0] == '>') {
+            // im gonna break this here so queue doesnt crash, but it should
+            // go on to parse and throw an error if this happens
+            if (tokens.size() == 0)
+                break;
+            if (tokens.front().token_str()[0] == '=') {
+                std::string token_string = "";
+                token_string +=
+                    current_token.token_str() + tokens.pop().token_str();
+                current_token = string_tokenizer::Token(token_string, 5);
+            }
+        }
+        _tokens.push(current_token);
     }
     tokens = _tokens;
 }
