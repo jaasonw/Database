@@ -1,5 +1,5 @@
 #pragma once
-#include "Node.h"
+#include "LinkedList/Node.h"
 #include <cassert>
 #include <iostream>
 
