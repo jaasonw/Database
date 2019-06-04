@@ -81,13 +81,17 @@ void Table::select(const std::vector<std::string>& fields,
         }
     }
     else {
+        for (size_t i = 0; i < fields.size(); ++i) {
+            if (!column_map.contains(fields[i])) {
+                throw std::runtime_error(INVALID_NAME + fields[i]);
+            }
+        }
         Table temp("temp", fields);
 
         Record r;
         for (long i = 1; r.read(file_stream, i) > 0; ++i) {
             r.read(file_stream, i);
             std::vector<std::string> temp_row;
-
             for (size_t j = 0; j < fields.size(); ++j) {
                 temp_row.push_back(r.buffer[column_map[fields[j]]]);
             }
