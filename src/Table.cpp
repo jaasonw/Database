@@ -1,10 +1,13 @@
 #include "Table.h"
 
+Table::Table() : name("") {}
 Table::Table(std::string name) : name(name) {
     // this shouldnt call on a nonexistent table
     if (!bin_io::file_exists(get_filename().c_str()))
         throw std::runtime_error(CANNOT_FIND_TABLE);
     db_read();
+    reindex();
+    // std::cout << index << '\n';
 }
 Table::Table(std::string name, const std::vector<std::string>& columns) {
     // the technology isnt there for this yet :)
@@ -31,8 +34,6 @@ bool Table::db_read() {
         index_block.read(file_stream, 0);
         columns = index_block.to_vector();
     }
-    reindex();
-    // std::cout << index << '\n';
     file_stream.close();
     return !file_stream.fail();
 }
@@ -52,7 +53,8 @@ void Table::insert_into(const std::vector<std::string>& fields) {
     }
     Record r;
     r.create_from_vector(fields);
-    r.append_to_file(f);
+    long record_number = r.append_to_file(f);
+    // index[]
     f.close();
 }
 
@@ -99,7 +101,6 @@ void Table::select(const std::vector<std::string>& fields,
             }
             temp.insert_into(temp_row);
         }
-
     }
     file_stream.close();
 }

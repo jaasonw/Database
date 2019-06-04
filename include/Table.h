@@ -3,7 +3,6 @@
 #include "Map/Map.h"
 #include "MultiMap/MultiMap.h"
 #include "constants.h"
-#include "error_messages.h"
 #include "util/io/Record.h"
 #include <fstream>
 #include <iomanip>
@@ -16,8 +15,7 @@ private:
     std::string name;
     
     std::vector<std::string> columns;
-    Map::Map<std::string, MultiMap::MultiMap<std::string, long>> index;
-    // Index index;
+    Index index;
 
     // returns a string with the filename
     std::string get_filename();
@@ -35,6 +33,8 @@ private:
     const char* INVALID_NAME = "Error: Invalid name: ";
 
 public:
+    // default constructor so map doesnt flip
+    Table();
     // for opening an existing table
     Table(std::string name);
     // for initializing a new table with new fields
