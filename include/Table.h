@@ -3,6 +3,7 @@
 #include "Map/Map.h"
 #include "MultiMap/MultiMap.h"
 #include "constants.h"
+#include "rpn/shunting_yard.h"
 #include "util/io/Record.h"
 #include <fstream>
 #include <iomanip>

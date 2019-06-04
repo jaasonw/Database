@@ -70,6 +70,10 @@ void Table::select(const std::vector<std::string>& fields,
         throw std::runtime_error(CANNOT_FIND_TABLE);
     std::fstream file_stream;
     bin_io::open_fileRW(file_stream, get_filename().c_str());
+
+    // handle where condition
+    std::cout << infix_to_postfix(where) << '\n';
+
     // this might need to be replaced with something else later
     if (fields[0] == "*") {
         Table temp("temp", columns);

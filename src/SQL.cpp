@@ -32,9 +32,9 @@ void SQL::interactive() {
 void SQL::execute_string(std::string command) {
     try {
         auto parse_tree = parser.parse(command);
-#ifdef DEBUG
-        std::cout << parse_tree << '\n';
-#endif
+        #ifdef DEBUG
+            std::cout << parse_tree << '\n';
+        #endif
         // select
         if (parse_tree["command"][0] == "select") {
             tables[parse_tree["table_name"][0]]->select(parse_tree["fields"],
