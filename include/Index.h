@@ -4,11 +4,12 @@
 #include <iostream>
 #include <string>
 
+// this class pretty much just exists for the sole purpose of printing the index
+// and making the map typename look a bit nicer I guess
 class Index {
 private:
     Map::Map<std::string, MultiMap::MultiMap<std::string, long>> index;
 public:
-    Index() {}
     friend std::ostream& operator<<(std::ostream& outs, const Index& i) {
         for (auto map_it = i.index.begin(); map_it != nullptr; ++map_it) {
             outs << map_it.key() << '\n';
