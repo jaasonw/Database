@@ -131,9 +131,7 @@ SQLStateMachine::SQLStateMachine() {
 int SQLStateMachine::update_state(std::string token) {
     sql_parser::Keyword type = sql_parser::STRING;
     // uppercase the token
-    for (size_t i = 0; i < token.size(); i++) {
-        token[i] = toupper(token[i]);
-    }
+    token = string_util::uppercase(token);
     if (keywords.contains(token)) {
         type = keywords[token];
     }

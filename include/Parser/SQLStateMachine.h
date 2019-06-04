@@ -4,6 +4,7 @@
 #include "StringTokenizer/Token.h"
 #include "StringTokenizer/state_machine/state_table.h"
 #include "constants.h"
+#include "util/string_util.h"
 #include <cctype>
 #include <string>
 
