@@ -21,9 +21,13 @@ MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
     int last_state = sql_state.get_state();
     while (!tokens.empty()) {
         string_tokenizer::Token t = tokens.pop();
-        while (isspace(t.token_str()[0])) {
+        while (!tokens.empty() && isspace(t.token_str()[0])) {
             t = tokens.pop();
         }
+        // we somehow exited the while loop with spaces, it's probably not
+        // supposed to be there
+        if (isspace(t.token_str()[0]))
+            break;
         std::string token_string = "";
         token_string = t.token_str();
         last_state = sql_state.update_state(token_string);
