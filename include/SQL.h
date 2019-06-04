@@ -28,7 +28,11 @@ SQL::SQL() {
     while (fin >> tablename) {
         tables[tablename] = new Table(tablename);
     }
-    std::cout << tables;
+    // std::cout << tables << '\n';
+    std::cout << "Found and indexed tables: " << '\n';
+    for (auto it = tables.begin(); it != nullptr; it++) {
+        std::cout << it.key() << '\n';
+    }
     fin.close();
 }
 
@@ -55,11 +59,13 @@ void SQL::execute_string(std::string command) {
             std::cout << temp << '\n';
         }
         // create
-        if (parse_tree["command"][0] == "create") {
+        if (parse_tree["command"][0] == "create" ||
+            parse_tree["command"][0] == "make") {
             tables[parse_tree["table_name"][0]] =
                 new Table(parse_tree["table_name"][0], parse_tree["fields"]);
             std::ofstream fout;
-            fout << '\n' <<parse_tree["table_name"][0] << '\n';
+            fout.open("tables.txt", std::ios::app);
+            fout << '\n' << parse_tree["table_name"][0];
             fout.close();
         }
         // insert
