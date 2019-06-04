@@ -1,5 +1,5 @@
 #pragma once
-#include "List/linked_list_functions.h"
+#include "LinkedList/linked_list_functions.h"
 #include <cassert>
 #include <iostream>
 
