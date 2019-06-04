@@ -78,3 +78,13 @@ void SQL::execute_string(std::string command) {
         std::cerr << e.what() << '\n';
     }
 }
+
+void SQL::execute_file(std::string filename) {
+    std::ifstream fin;
+    fin.open(filename);
+    std::string cmd;
+    while(std::getline(fin, cmd)) {
+        execute_string(cmd);
+    }
+    fin.close();
+}
