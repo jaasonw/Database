@@ -83,7 +83,7 @@ void Table::select(const std::vector<std::string>& fields,
         Table temp("temp", columns);
 
         Record r;
-        if (where_indices.size() > 0 && has_where) {
+        if (where_indices.size() > 0 || has_where) {
             for (size_t i = 0; i < where_indices.size(); ++i) {
                 r.read(file_stream, where_indices[i]);
                 temp.insert_into(r.to_vector());
@@ -105,7 +105,7 @@ void Table::select(const std::vector<std::string>& fields,
         Table temp("temp", fields);
 
         Record r;
-        if (where_indices.size() > 0 && has_where) {
+        if (where_indices.size() > 0 || has_where) {
             for (size_t i = 0; i < where_indices.size(); ++i) {
                 std::vector<std::string> temp_row;
                 r.read(file_stream, where_indices[i]);
