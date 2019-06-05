@@ -10,14 +10,12 @@ std::vector<T> set_intersect(std::vector<T> v1, std::vector<T> v2) {
     std::vector<T> result;
     Map::Map<T, int> map;
     for (T e : v1)
-        map[e] = 0;
-    for (T e : v2) {
-        if (map.contains(e))
-            map[e]++;
-    }
+        map[e] = 0x2;
+    for (T e : v2)
+        map[e] |= 0x1;
 
     for (auto it = map.begin(); it != nullptr; ++it) {
-        if (*it >= 2)
+        if (*it == 0x3)
             result.push_back(it.key());
     }
     return result;
