@@ -6,7 +6,7 @@
 namespace vset {
 
 template <typename T>
-std::vector<T> set_intersect(std::vector<T> v1, std::vector<T> v2) {
+std::vector<T> set_intersect(const std::vector<T>& v1, const std::vector<T>& v2) {
     std::vector<T> result;
     Map::Map<T, int> map;
     for (T e : v1)
@@ -22,7 +22,7 @@ std::vector<T> set_intersect(std::vector<T> v1, std::vector<T> v2) {
 }
 
 template <typename T>
-std::vector<T> set_union(std::vector<T> v1, std::vector<T> v2) {
+std::vector<T> set_union(const std::vector<T>& v1, const std::vector<T>& v2) {
     std::vector<T> result;
     BPlusTree<T> tree;
     for (T e : v1)

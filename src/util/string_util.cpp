@@ -5,7 +5,7 @@ namespace string_util {
 std::vector<std::string> split(std::string str, char delim) {}
 
 std::string uppercase(std::string str) {
-    for (size_t i = 0; i < str.size(); i++) {
+    for (size_t i = 0; i < str.size(); ++i) {
         str[i] = toupper(str[i]);
     }
     return str;
