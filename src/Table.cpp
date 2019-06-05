@@ -66,22 +66,34 @@ void Table::insert_into(const std::vector<std::string>& fields) {
 
 void Table::select(const std::vector<std::string>& fields,
                    const std::vector<std::string>& where) {
+    bool has_where = where.size() > 0;
     if (!bin_io::file_exists(get_filename().c_str()))
         throw std::runtime_error(CANNOT_FIND_TABLE);
     std::fstream file_stream;
     bin_io::open_fileRW(file_stream, get_filename().c_str());
 
     // handle where condition
-    std::cout << infix_to_postfix(where) << '\n';
+    std::vector<long> where_indices;
+    Queue<std::string> where_queue = infix_to_postfix(where);
+    where_indices = evaluate_where(where_queue);
+
 
     // this might need to be replaced with something else later
     if (fields[0] == "*") {
         Table temp("temp", columns);
 
         Record r;
-        for (int i = 1; r.read(file_stream, i) > 0; ++i) {
-            r.read(file_stream, i);
-            temp.insert_into(r.to_vector());
+        if (where_indices.size() > 0 && has_where) {
+            for (size_t i = 0; i < where_indices.size(); ++i) {
+                r.read(file_stream, where_indices[i]);
+                temp.insert_into(r.to_vector());
+            }
+        }
+        else {
+            for (int i = 1; r.read(file_stream, i) > 0; ++i) {
+                r.read(file_stream, i);
+                temp.insert_into(r.to_vector());
+            }
         }
     }
     else {
@@ -93,13 +105,24 @@ void Table::select(const std::vector<std::string>& fields,
         Table temp("temp", fields);
 
         Record r;
-        for (long i = 1; r.read(file_stream, i) > 0; ++i) {
-            r.read(file_stream, i);
-            std::vector<std::string> temp_row;
-            for (size_t j = 0; j < fields.size(); ++j) {
-                temp_row.push_back(r.buffer[column_map[fields[j]]]);
+        std::vector<std::string> temp_row;
+        if (where_indices.size() > 0 && has_where) {
+            for (size_t i = 0; i < where_indices.size(); ++i) {
+                r.read(file_stream, where_indices[i]);
+                for (size_t j = 0; j < fields.size(); ++j) {
+                    temp_row.push_back(r.buffer[column_map[fields[j]]]);
+                }
+                temp.insert_into(temp_row);
             }
-            temp.insert_into(temp_row);
+        }
+        else {
+            for (long i = 1; r.read(file_stream, i) > 0; ++i) {
+                r.read(file_stream, i);
+                for (size_t j = 0; j < fields.size(); ++j) {
+                    temp_row.push_back(r.buffer[column_map[fields[j]]]);
+                }
+                temp.insert_into(temp_row);
+            }
         }
     }
     file_stream.close();
@@ -161,4 +184,86 @@ void Table::reindex() {
         }
     }
     file_stream.close();
+}
+
+std::vector<long> Table::evaluate_where(Queue<std::string>& where) {
+    Queue<std::vector<long>> results;
+    while (!where.empty()) {
+        if (string_util::uppercase(where.front()) != "AND" &&
+            string_util::uppercase(where.front()) != "OR") {
+
+            std::string arg1 = where.pop();
+            std::string arg2 = where.pop();
+            std::string op = where.pop();
+            if (op == "=") {
+                results.push(get_equal(arg1, arg2));
+            }
+            else if (op == "<") {
+                results.push(get_less(arg1, arg2));
+            } else if (op == "<=") {
+                results.push(vset::set_union(get_less(arg1, arg2),
+                                             get_equal(arg1, arg2)));
+            } else if (op == ">") {
+                results.push(get_greater(arg1, arg2));
+            } else if (op == ">=") {
+                results.push(vset::set_union(get_greater(arg1, arg2),
+                                             get_equal(arg1, arg2)));
+            }
+        }
+        else {
+            std::string logic = where.pop();
+            if (string_util::uppercase(logic) == "AND") {
+                results.push(
+                    vset::set_intersect(results.pop(), results.pop())
+                );
+            }
+            else if (string_util::uppercase(logic) == "OR") {
+                results.push(
+                    vset::set_union(results.pop(), results.pop())
+                );
+            }
+        }
+    }
+    // this should end with only 1 in the queue, if not....we have a problem
+    assert(results.size() <= 1);
+    if (!results.empty())
+        return results.pop();
+    else
+        return std::vector<long>();
+}
+
+std::vector<long> Table::get_greater(std::string arg1, std::string arg2) {
+    if (!index.contains(arg1))
+        throw std::runtime_error(INVALID_NAME + arg1);
+    std::vector<long> results;
+    for (auto it = index[arg1].begin(); it != nullptr; ++it) {
+        if (it.key() > arg2) {
+            for (size_t i = 0; i < it->size(); ++i) {
+                results.push_back(it->at(i));
+            }
+        }
+    }
+    return results;
+}
+std::vector<long> Table::get_less(std::string arg1, std::string arg2) {
+    if (!index.contains(arg1))
+        throw std::runtime_error(INVALID_NAME + arg1);
+    std::vector<long> results;
+    for (auto it = index[arg1].begin(); it.key() < arg2; ++it) {
+        for (size_t i = 0; i < it->size(); ++i) {
+            results.push_back(it->at(i));
+        }
+    }
+    return results;
+}
+std::vector<long> Table::get_equal(std::string arg1, std::string arg2) {
+    if (!index.contains(arg1))
+        throw std::runtime_error(INVALID_NAME + arg1);
+    std::vector<long> results;
+    if (index[arg1].contains(arg2)) {
+        for (size_t i = 0; i < index[arg1][arg2].size(); ++i) {
+            results.push_back(index[arg1][arg2][i]);
+        }
+    }
+    return results;
 }

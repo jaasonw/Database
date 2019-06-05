@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "rpn/shunting_yard.h"
 #include "util/io/Record.h"
+#include "util/vector_set.h"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -28,6 +29,17 @@ private:
     // iterates through the entire file and indexes the database
     // should only be run once, when the table is initialized
     void reindex();
+
+    // returns a vector of indices that satisfy the where clause
+    std::vector<long> evaluate_where(Queue<std::string>& where);
+
+    // returns the indicies of all entries of arg1 that are greater than arg2
+    std::vector<long> get_greater(std::string arg1, std::string arg2);
+    // returns the indicies of all entries of arg1 that are less than arg2
+    std::vector<long> get_less(std::string arg1, std::string arg2);
+    // returns the indicies of all entries of arg1 that are equal than arg2
+    std::vector<long> get_equal(std::string arg1, std::string arg2);
+
 
     // just a bunch of error message constants, don't mind these
     const char* CANNOT_FIND_TABLE = "Error: cannot find specified table";

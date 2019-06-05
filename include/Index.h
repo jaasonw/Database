@@ -23,4 +23,5 @@ public:
     MultiMap::MultiMap<std::string, long>& operator[](std::string key) {
         return index[key];
     }
+    bool contains(std::string field) { return index.contains(field); }
 };
