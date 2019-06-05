@@ -38,7 +38,8 @@ FLAGS = [
     "-std=c++11",
     "-Wall",
     "-Wextra",
-    "-g"
+    "-Ofast",
+    # "-g"
 ]
 
 # add clang specific flags here
