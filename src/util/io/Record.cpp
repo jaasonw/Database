@@ -10,7 +10,7 @@ long Record::append_to_file(std::fstream& outs) {
     outs.seekp(0, std::ios::end);
     long pos = outs.tellp() / (ROWS * COLS);
 
-    for (int i = 0; i < ROWS; i++) {
+    for (int i = 0; i < ROWS; ++i) {
         outs.write(buffer[i], COLS);
     }
 

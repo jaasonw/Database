@@ -230,7 +230,7 @@ BPlusTree<T>::~BPlusTree() {
 
 template <typename T>
 void BPlusTree<T>::clear_tree() {
-    for (size_t i = 0; i < subset_size; i++) {
+    for (size_t i = 0; i < subset_size; ++i) {
         if (subset[i] != nullptr) {
             subset[i]->clear_tree();
             delete subset[i];
@@ -246,7 +246,7 @@ void BPlusTree<T>::copy_tree(const BPlusTree<T>& other) {
     b_array::copy_array(other.data, data, other.data_size, data_size);
     duplicates_allowed = other.duplicates_allowed;
     subset_size = other.subset_size;
-    for (size_t i = 0; i < other.subset_size; i++) {
+    for (size_t i = 0; i < other.subset_size; ++i) {
         if (other.subset[i] != nullptr) {
             subset[i] = new BPlusTree<T>(other.duplicates_allowed);
             subset[i]->copy_tree(*(other.subset[i]));
@@ -256,7 +256,7 @@ void BPlusTree<T>::copy_tree(const BPlusTree<T>& other) {
 
 template <typename T>
 void BPlusTree<T>::print_event_log(std::ostream& outs) const {
-    for (size_t i = 0; i < event_log.size(); i++) {
+    for (size_t i = 0; i < event_log.size(); ++i) {
         outs << event_log[i] << std::endl;
     }
 }
@@ -524,7 +524,7 @@ void BPlusTree<T>::erase_node() {
     next = nullptr;
     subset_size = 0;
     // null out the subset array before it causes problems
-    for (size_t i = 0; i < SUBSET_CAPACITY; i++) {
+    for (size_t i = 0; i < SUBSET_CAPACITY; ++i) {
         if (i < DATA_CAPACITY)
             data[i] = T();
         subset[i] = nullptr;
@@ -600,7 +600,7 @@ void BPlusTree<T>::loose_remove(const T& entry, BPlusTree<T>* origin, int offset
         throw std::out_of_range("Item not in tree");
         // return;
     }
-    for (size_t i = 0; i < data_size; i++) {
+    for (size_t i = 0; i < data_size; ++i) {
         fix_shortage(i);
     }
 }
@@ -795,7 +795,7 @@ BPlusTree<T>* BPlusTree<T>::link_leaves(BPlusTree<T>* previous) {
     if (subset_size > 0 && subset[0]->is_leaf()) {
         if (previous != nullptr)
             previous->next = subset[0];
-        for (size_t i = 0; i < subset_size - 1; i++) {
+        for (size_t i = 0; i < subset_size - 1; ++i) {
             subset[i]->next = subset[i + 1];
         }
         return subset[subset_size - 1];
@@ -803,7 +803,7 @@ BPlusTree<T>* BPlusTree<T>::link_leaves(BPlusTree<T>* previous) {
     // keep recursioning down
     else {
         BPlusTree<T>* last_link = previous;
-        for (size_t i = 0; i < subset_size - 1; i++) {
+        for (size_t i = 0; i < subset_size - 1; ++i) {
             BPlusTree<T>* left = subset[i];
             BPlusTree<T>* right = subset[i + 1];
             last_link = left->link_leaves(last_link);
@@ -839,10 +839,7 @@ bool BPlusTree<T>::is_valid() {
                         subset[subset_size - 1]->data_size,
                         data[data_size - 1]))
         return false;
-    for (size_t i = 0; i < data_size; i++) {
-
-    }
-    for (size_t i = 0; i < data_size; i++) {
+    for (size_t i = 0; i < data_size; ++i) {
         if (!b_array::is_gt(subset[i]->data,
                             subset[i]->data_size,
                             data[data_size - 1]))
@@ -851,7 +848,7 @@ bool BPlusTree<T>::is_valid() {
             return false;
         }
     }
-    for (size_t i = 0; i < subset_size; i++) {
+    for (size_t i = 0; i < subset_size; ++i) {
         if (!subset[i]->is_valid())
             return false;
     }

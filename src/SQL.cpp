@@ -14,7 +14,7 @@ SQL::SQL() {
     }
     // std::cout << tables << '\n';
     std::cout << "Found and indexed tables: " << '\n';
-    for (auto it = tables.begin(); it != nullptr; it++) {
+    for (auto it = tables.begin(); it != nullptr; ++it) {
         std::cout << it.key() << '\n';
     }
     fin.close();
