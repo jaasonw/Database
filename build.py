@@ -6,7 +6,7 @@ import sys
 import time
 
 COMPILER = "g++"
-EXECUTABLE = "a.exe"
+EXECUTABLE = "database.exe"
 MAIN = "main.cpp"
 
 if (len(sys.argv) > 1):
