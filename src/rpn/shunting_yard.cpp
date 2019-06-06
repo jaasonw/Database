@@ -1,6 +1,6 @@
 #include "rpn/shunting_yard.h"
 
-Queue<std::string> infix_to_postfix(std::vector<std::string> infix) {
+Queue<std::string> infix_to_postfix(const std::vector<std::string>& infix) {
     // operator -> precedence
     Map::Map<std::string, int> operators;
     operators["AND"] = 0;

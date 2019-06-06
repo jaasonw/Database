@@ -66,7 +66,6 @@ void Table::insert_into(const std::vector<std::string>& fields) {
 
 void Table::select(const std::vector<std::string>& fields,
                    const std::vector<std::string>& where) {
-    bool has_where = where.size() > 0;
     if (!bin_io::file_exists(get_filename().c_str()))
         throw std::runtime_error(CANNOT_FIND_TABLE);
     std::fstream file_stream;
@@ -83,7 +82,7 @@ void Table::select(const std::vector<std::string>& fields,
         Table temp("temp", columns);
 
         Record r;
-        if (where_indices.size() > 0 || has_where) {
+        if (where_indices.size() > 0 || where.size() > 0) {
             for (size_t i = 0; i < where_indices.size(); ++i) {
                 r.read(file_stream, where_indices[i]);
                 temp.insert_into(r.to_vector());
@@ -105,7 +104,7 @@ void Table::select(const std::vector<std::string>& fields,
         Table temp("temp", fields);
 
         Record r;
-        if (where_indices.size() > 0 || has_where) {
+        if (where_indices.size() > 0 || where.size() > 0) {
             for (size_t i = 0; i < where_indices.size(); ++i) {
                 std::vector<std::string> temp_row;
                 r.read(file_stream, where_indices[i]);

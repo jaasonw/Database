@@ -6,4 +6,4 @@
 #include <string>
 #include <vector>
 
-Queue<std::string> infix_to_postfix(std::vector<std::string> infix);
+Queue<std::string> infix_to_postfix(const std::vector<std::string>& infix);
