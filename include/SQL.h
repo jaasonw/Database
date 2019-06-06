@@ -7,10 +7,17 @@
 class SQL {
 private:
     Parser parser;
-    // um, add in the big 3 for this later, not that i'll ever need it
     Map::Map<std::string, Table*> tables;
+    void get_tables();
+    void print_table_list();
 public:
     SQL();
+    // this just overrides the default shallow copy
+    SQL(const SQL&);
+    ~SQL();
+    // this just overrides the default shallow copy
+    SQL& operator=(const SQL& other);
+
     void interactive();
     // opens a text file and runs the commands
     void execute_file(std::string filename);

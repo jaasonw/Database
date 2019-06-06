@@ -1,23 +1,29 @@
 #include "SQL.h"
 
 SQL::SQL() {
-    // create file if it dont exist
-    std::ofstream fout;
-    fout.open("tables.txt", std::ios::app);
-    fout.close();
+    get_tables();
+    print_table_list();
+}
+SQL::SQL(const SQL&) {
+    get_tables();
+    print_table_list();
+}
 
-    std::ifstream fin;
-    fin.open("tables.txt");
-    std::string tablename;
-    while (fin >> tablename) {
-        tables[tablename] = new Table(tablename);
-    }
-    // std::cout << tables << '\n';
-    std::cout << "Found and indexed tables: " << '\n';
+SQL::~SQL() {
     for (auto it = tables.begin(); it != nullptr; ++it) {
-        std::cout << it.key() << '\n';
+        delete *it;
     }
-    fin.close();
+}
+
+SQL& SQL::operator=(const SQL& other) {
+    if (this == &other)
+        return *this;
+    for (auto it = tables.begin(); it != nullptr; ++it) {
+        delete *it;
+    }
+    get_tables();
+    print_table_list();
+    return *this;
 }
 
 void SQL::interactive() {
@@ -45,12 +51,18 @@ bool SQL::execute_string(std::string command, bool verbose) {
         // create
         if (parse_tree["command"][0] == "create" ||
             parse_tree["command"][0] == "make") {
-            tables[parse_tree["table_name"][0]] =
-                new Table(parse_tree["table_name"][0], parse_tree["fields"]);
-            std::ofstream fout;
-            fout.open("tables.txt", std::ios::app);
-            fout << '\n' << parse_tree["table_name"][0];
-            fout.close();
+            std::string table_name = parse_tree["table_name"][0];
+            if (tables.contains(table_name)) {
+                delete tables[table_name];
+                tables[table_name] = nullptr;
+            }
+            if (!tables.contains(table_name)) {
+                std::ofstream fout;
+                fout.open("tables.txt", std::ios::app);
+                fout << '\n' << table_name;
+                fout.close();
+            }
+            tables[table_name] = new Table(table_name, parse_tree["fields"]);
             if (verbose) {
                 std::cout << *tables[parse_tree["table_name"][0]] << '\n';
             }
@@ -87,4 +99,30 @@ void SQL::execute_file(std::string filename) {
         }
     }
     fin.close();
+}
+
+void SQL::get_tables() {
+    // create file if it dont exist
+    std::ofstream fout;
+    fout.open("tables.txt", std::ios::app);
+    fout.close();
+
+    std::ifstream fin;
+    fin.open("tables.txt");
+    std::string tablename;
+    while (fin >> tablename) {
+        tables[tablename] = new Table(tablename);
+    }
+    fin.close();
+}
+void SQL::print_table_list() {
+    std::cout << "Found and indexed tables: " << '\n';
+    int num = 1;
+    for (auto it = tables.begin(); it != nullptr; ++it, ++num) {
+        std::cout << std::setw(20) << std::left << it.key();
+        if (num > 0 && num % 4 == 0) {
+            std::cout << '\n';
+        }
+    }
+    std::cout << '\n';
 }
