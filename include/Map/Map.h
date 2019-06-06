@@ -76,6 +76,7 @@ public:
     // Iterators
     Iterator begin() const;
     Iterator end() const;
+    Iterator first_ge(const Key& entry) const;
 
     // operations
     bool contains(const Key& key, const T& value);
@@ -150,6 +151,11 @@ typename Map<Key, T>::Iterator Map<Key, T>::begin() const {
 template <typename Key, typename T>
 typename Map<Key, T>::Iterator Map<Key, T>::end() const {
     return Iterator(tree.end());
+}
+
+template <typename Key, typename T>
+typename Map<Key, T>::Iterator Map<Key, T>::first_ge(const Key& entry) const {
+    return Iterator(tree.first_ge(entry));
 }
 
 } // namespace Map

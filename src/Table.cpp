@@ -236,7 +236,7 @@ std::vector<long> Table::get_greater(std::string arg1, std::string arg2) {
     if (!index.contains(arg1))
         throw std::runtime_error(INVALID_NAME + arg1);
     std::vector<long> results;
-    for (auto it = index[arg1].begin(); it != nullptr; ++it) {
+    for (auto it = index[arg1].first_ge(arg2); it != nullptr; ++it) {
         if (it.key() > arg2) {
             for (size_t i = 0; i < it->size(); ++i) {
                 results.push_back(it->at(i));
