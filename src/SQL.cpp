@@ -29,7 +29,7 @@ void SQL::interactive() {
     }
 }
 
-void SQL::execute_string(std::string command) {
+bool SQL::execute_string(std::string command, bool verbose) {
     try {
         auto parse_tree = parser.parse(command);
         #ifdef DEBUG
@@ -51,15 +51,22 @@ void SQL::execute_string(std::string command) {
             fout.open("tables.txt", std::ios::app);
             fout << '\n' << parse_tree["table_name"][0];
             fout.close();
+            if (verbose) {
+                std::cout << *tables[parse_tree["table_name"][0]] << '\n';
+            }
         }
         // insert
         if (parse_tree["command"][0] == "insert") {
             tables[parse_tree["table_name"][0]]->insert_into(
                 parse_tree["fields"]);
+            if (verbose) {
+                std::cout << *tables[parse_tree["table_name"][0]] << '\n';
+            }
         }
-
+        return true;
     } catch (std::runtime_error e) {
         std::cerr << e.what() << '\n';
+        return false;
     }
 }
 
@@ -67,8 +74,17 @@ void SQL::execute_file(std::string filename) {
     std::ifstream fin;
     fin.open(filename);
     std::string cmd;
-    while (std::getline(fin, cmd)) {
-        execute_string(cmd);
+    for (int i = 1; std::getline(fin, cmd);) {
+        if (cmd.size() > 0 && (cmd.substr(0, 2) == "//" || cmd.at(0) == '#')) {
+            std::cout << cmd << '\n';
+        }
+        else if (cmd.size() == 0 || string_util::iswhitespace(cmd)) {
+            // do nothing, just skip it
+        }
+        else {
+            std::cout<< i++ << ": " << cmd << '\n';
+            execute_string(cmd, true);
+        }
     }
     fin.close();
 }

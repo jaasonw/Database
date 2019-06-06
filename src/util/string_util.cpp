@@ -10,5 +10,12 @@ std::string uppercase(std::string str) {
     }
     return str;
 }
+bool iswhitespace(std::string str) {
+    for (char c : str) {
+        if (!isspace(c))
+            return false;
+    }
+    return true;
+}
 
 } // namespace string_util

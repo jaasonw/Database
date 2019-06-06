@@ -12,6 +12,8 @@ private:
 public:
     SQL();
     void interactive();
+    // opens a text file and runs the commands
     void execute_file(std::string filename);
-    void execute_string(std::string str);
+    // executes a singular command, returns true if command was successful
+    bool execute_string(std::string str, bool verbose = false);
 };
