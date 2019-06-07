@@ -10,6 +10,8 @@ SQLStateMachine::SQLStateMachine() {
     keywords["WHERE"] = sql_parser::WHERE;
     keywords["TABLE"] = sql_parser::TABLE;
     keywords["VALUES"] = sql_parser::VALUES;
+    keywords["DROP"] = sql_parser::DROP;
+    keywords["TABLES"] = sql_parser::LIST_TABLES;
     keywords["*"] = sql_parser::ASTERISK;
     keywords[","] = sql_parser::COMMA;
     keywords["("] = sql_parser::OPEN_PARENTH;
@@ -57,6 +59,11 @@ SQLStateMachine::SQLStateMachine() {
     state_machine::mark_fail(state_table, 26);
     state_machine::mark_success(state_table, 27);
     state_machine::mark_fail(state_table, 28);
+    state_machine::mark_fail(state_table, 29);
+    state_machine::mark_fail(state_table, 30);
+    state_machine::mark_success(state_table, 31);
+    state_machine::mark_success(state_table, 32);
+
     #ifdef ENABLE_NON_STANDARD_SQL
         // insert command parenthesis skipping
         state_machine::mark_success(state_table, 25);
@@ -119,6 +126,13 @@ SQLStateMachine::SQLStateMachine() {
 
     state_machine::mark_cell(22, state_table, sql_parser::VALUES, 23);
 
+    // command: drop
+    state_machine::mark_cell(0, state_table, sql_parser::DROP, 29);
+    state_machine::mark_cell(29, state_table, sql_parser::TABLE, 30);
+    state_machine::mark_cell(30, state_table, sql_parser::STRING, 31);
+
+    // list tables
+    state_machine::mark_cell(0, state_table, sql_parser::LIST_TABLES, 32);
     #ifdef ENABLE_NON_STANDARD_SQL
         // insert command parenthesis skipping
         state_machine::mark_cell(23, state_table, sql_parser::STRING, 25);

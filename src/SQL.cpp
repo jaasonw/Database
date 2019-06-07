@@ -1,12 +1,12 @@
 #include "SQL.h"
 
 SQL::SQL() {
+    print_welcome();
     get_tables();
-    print_table_list();
 }
 SQL::SQL(const SQL&) {
+    print_welcome();
     get_tables();
-    print_table_list();
 }
 
 SQL::~SQL() {
@@ -22,7 +22,7 @@ SQL& SQL::operator=(const SQL& other) {
         delete *it;
     }
     get_tables();
-    print_table_list();
+    // print_table_list();
     return *this;
 }
 
@@ -41,43 +41,73 @@ bool SQL::execute_string(std::string command, bool verbose) {
         #ifdef DEBUG
             std::cout << parse_tree << '\n';
         #endif
+
+        std::string command;
+        std::string table_name;
+        std::vector<std::string> fields;
+        if (parse_tree["command"].size() > 0)
+            command = parse_tree["command"][0];
+        if (parse_tree["table_name"].size() > 0)
+            table_name = parse_tree["table_name"][0];
+        if (parse_tree["fields"].size() > 0)
+            fields = parse_tree["fields"];
         // select
-        if (parse_tree["command"][0] == "select") {
-            std::string table_name = parse_tree["table_name"][0];
+        if (command == "SELECT") {
             if (!tables.contains(table_name)) {
                 Table invalid_table(table_name);
             }
-            tables[table_name]->select(parse_tree["fields"],
-                                       parse_tree["where"]);
-            Table temp("temp");
-            std::cout << temp << '\n';
+            else {
+                tables[table_name]->select(fields, parse_tree["where"]);
+                Table temp("temp");
+                std::cout << temp << '\n';
+            }
         }
         // create
-        if (parse_tree["command"][0] == "create" ||
-            parse_tree["command"][0] == "make") {
-            std::string table_name = parse_tree["table_name"][0];
+        if (command == "CREATE" || command == "MAKE") {
             if (tables.contains(table_name)) {
                 delete tables[table_name];
                 tables[table_name] = nullptr;
             }
             if (!tables.contains(table_name)) {
                 std::ofstream fout;
-                fout.open("tables.txt", std::ios::app);
+                fout.open(TABLES_FILE, std::ios::app);
                 fout << '\n' << table_name;
                 fout.close();
             }
-            tables[table_name] = new Table(table_name, parse_tree["fields"]);
+            tables[table_name] = new Table(table_name, fields);
             if (verbose) {
-                std::cout << *tables[parse_tree["table_name"][0]] << '\n';
+                std::cout << *tables[table_name] << '\n';
             }
         }
         // insert
-        if (parse_tree["command"][0] == "insert") {
-            tables[parse_tree["table_name"][0]]->insert_into(
-                parse_tree["fields"]);
-            if (verbose) {
-                std::cout << *tables[parse_tree["table_name"][0]] << '\n';
+        if (command == "INSERT") {
+            if (!tables.contains(table_name)) {
+                Table invalid_table(table_name);
             }
+            else {
+                tables[table_name]->insert_into(fields);
+                if (verbose) {
+                    std::cout << *tables[table_name] << '\n';
+                }
+            }
+        }
+        // drop
+        if (command == "DROP") {
+            if (tables.contains(table_name)) {
+                remove(tables[table_name]->get_filename().c_str());
+                delete tables[table_name];
+                tables[table_name] = nullptr;
+                tables.erase(table_name);
+                std::ofstream fout;
+                fout.open(TABLES_FILE);
+                for (auto it = tables.begin(); it != nullptr; ++it) {
+                    fout << it.key() << '\n';
+                }
+                fout.close();
+            }
+        }
+        if (command == "TABLES") {
+            print_table_list();
         }
         return true;
     } catch (std::runtime_error e) {
@@ -108,11 +138,11 @@ void SQL::execute_file(std::string filename) {
 void SQL::get_tables() {
     // create file if it dont exist
     std::ofstream fout;
-    fout.open("tables.txt", std::ios::app);
+    fout.open(TABLES_FILE, std::ios::app);
     fout.close();
 
     std::ifstream fin;
-    fin.open("tables.txt");
+    fin.open(TABLES_FILE);
     std::string tablename;
     while (fin >> tablename) {
         tables[tablename] = new Table(tablename);
@@ -120,7 +150,6 @@ void SQL::get_tables() {
     fin.close();
 }
 void SQL::print_table_list() {
-    std::cout << "Found and indexed tables: " << '\n';
     int num = 1;
     for (auto it = tables.begin(); it != nullptr; ++it, ++num) {
         std::cout << std::setw(20) << std::left << it.key();
@@ -129,4 +158,8 @@ void SQL::print_table_list() {
         }
     }
     std::cout << '\n';
+}
+void SQL::print_welcome() {
+    std::cout << "JasonSQL version 1.0.0" << '\n';
+    std::cout << "\"tables\" for table list" << '\n';
 }

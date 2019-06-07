@@ -14,6 +14,8 @@ enum Keyword {
     WHERE,
     TABLE,
     VALUES,
+    DROP,
+    LIST_TABLES,
     ASTERISK,
     COMMA,
     OPEN_PARENTH,

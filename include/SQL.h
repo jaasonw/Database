@@ -6,10 +6,12 @@
 
 class SQL {
 private:
+    const char* TABLES_FILE = "tables.txt";
     Parser parser;
     Map::Map<std::string, Table*> tables;
     void get_tables();
     void print_table_list();
+    void print_welcome();
 public:
     SQL();
     // this just overrides the default shallow copy

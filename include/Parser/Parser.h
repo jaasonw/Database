@@ -27,6 +27,6 @@ private:
 public:
     Parser() { set_string(""); };
     Parser(std::string input) { set_string(input); };
-    // converts the command into a parse tree
+    // converts the command into a parse tree, uppercases commands
     MultiMap::MultiMap<std::string, std::string> parse(std::string input);
 };

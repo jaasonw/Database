@@ -39,25 +39,45 @@ MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
                 throw std::runtime_error("Error unexpected token: " +
                                          token_string);
                 break;
+            // select
             case 1:
+            // create
             case 13:
+            // insert
             case 20:
-                parse_tree["command"] += token_string;
+            // drop
+            case 29:
+            // any 1 word commands i might want to add
+            case 32:
+                parse_tree["command"] += string_util::uppercase(token_string);
                 break;
+            // select: asterisk
             case 2:
+            // select: string
             case 3:
+            // create: field name
             case 17:
+            // insert: entry name
             case 25:
                 parse_tree["fields"] += token_string;
                 break;
+            // select: table name
             case 6:
+            // create: table name
             case 15:
+            // insert: table name
             case 22:
+            // drop: table name
+            case 31:
                 parse_tree["table_name"] += token_string;
                 break;
+            // field name
             case 9:
+            // relational
             case 10:
+            // entry name
             case 11:
+            // logical
             case 12:
                 parse_tree["where"] += token_string;
                 break;
