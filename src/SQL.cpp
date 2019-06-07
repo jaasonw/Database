@@ -43,8 +43,12 @@ bool SQL::execute_string(std::string command, bool verbose) {
         #endif
         // select
         if (parse_tree["command"][0] == "select") {
-            tables[parse_tree["table_name"][0]]->select(parse_tree["fields"],
-                                                        parse_tree["where"]);
+            std::string table_name = parse_tree["table_name"][0];
+            if (!tables.contains(table_name)) {
+                Table invalid_table(table_name);
+            }
+            tables[table_name]->select(parse_tree["fields"],
+                                       parse_tree["where"]);
             Table temp("temp");
             std::cout << temp << '\n';
         }
