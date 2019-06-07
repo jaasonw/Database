@@ -20,9 +20,6 @@ private:
     Map::Map<std::string, size_t> column_map;
     Index index;
 
-    // returns a string with the filename
-    std::string get_filename();
-
     // reads the field data from the database
     bool db_read();
 
@@ -65,6 +62,9 @@ public:
 
     // initilizes an empty file with the columns
     void init_file();
+
+    // returns a string with the filename
+    std::string get_filename();
 
     // returns a vector of entries satisfying the query
     friend std::ostream& operator<<(std::ostream& outs, Table& table);
