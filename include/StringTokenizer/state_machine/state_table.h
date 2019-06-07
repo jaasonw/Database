@@ -3,7 +3,7 @@
 
 namespace state_machine {
     const int MAX_COLUMNS = 255;
-    const int NUM_ROWS = 30;
+    const int NUM_ROWS = 255;
 
     // Fill all cells of the array with -1
     void init_table(int _table[][MAX_COLUMNS]);
