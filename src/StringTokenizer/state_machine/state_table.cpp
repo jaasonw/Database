@@ -36,7 +36,7 @@ namespace state_machine {
     // Mark columns represented by the string columns[] for this row
     void mark_cells(int row, int _table[][MAX_COLUMNS], const char columns[], int state) {
         for (int i = 0; columns[i] != '\0'; i++) {
-            _table[row][columns[i]] = state;
+            _table[row][static_cast<int>(columns[i])] = state;
         }
     }
 
@@ -69,11 +69,11 @@ namespace state_machine {
 
     // returns true if a valid token was found and moves the position to the
     // the end of the last valid token
-    bool get_token(const char* str, int& pos, int table[][MAX_COLUMNS], int& state) {
+    bool get_token(const char* str, size_t& pos, int table[][MAX_COLUMNS], int& state) {
         int _pos = pos;
         bool token_found = false;
         while (str[_pos] != '\0' && state != -1) {
-            state = table[state][str[_pos]];
+            state = table[state][static_cast<int>(str[_pos])];
             if (is_success(table, state)) {
                 pos = _pos;
                 token_found = true;

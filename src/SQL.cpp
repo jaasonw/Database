@@ -105,12 +105,15 @@ bool SQL::execute_string(std::string command, bool verbose) {
                 }
                 fout.close();
             }
+            else {
+                Table invalid_table(table_name);
+            }
         }
         if (command == "TABLES") {
             print_table_list();
         }
         return true;
-    } catch (std::runtime_error e) {
+    } catch (std::runtime_error& e) {
         std::cerr << e.what() << '\n';
         return false;
     }

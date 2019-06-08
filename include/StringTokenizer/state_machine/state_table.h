@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 // Utilities for creating the a state table for the state machine
 
 namespace state_machine {
@@ -36,5 +37,5 @@ namespace state_machine {
 
     // returns true if a valid token was found, sets the pos to the last valid
     // 
-    bool get_token(const char* str, int& pos, int table[][MAX_COLUMNS], int& state);
+    bool get_token(const char* str, size_t& pos, int table[][MAX_COLUMNS], int& state);
 }

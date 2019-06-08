@@ -61,13 +61,13 @@ private:
     // transfer one element RIGHT from child i
     void rotate_right(int i);
     // merge subset i with subset i+1
-    void merge_with_next_subset(int i);
+    void merge_with_next_subset(size_t i);
     // zeros out the node
     void erase_node();
 
     // we do need these though
     // transfer beginning of left subset to the end of right subset
-    void transfer_left(int i);
+    void transfer_left(size_t i);
     // transfer the end of the left subset to the beginning of the right
     void transfer_right(int i);
 
@@ -534,7 +534,7 @@ void BPlusTree<T>::erase_node() {
 }
 
 template <typename T>
-void BPlusTree<T>::merge_with_next_subset(int i) {
+void BPlusTree<T>::merge_with_next_subset(size_t i) {
     assert(i + 1 < subset_size);
     b_array::merge(subset[i]->data, subset[i + 1]->data, subset[i]->data_size,
                  subset[i + 1]->data_size);
@@ -753,7 +753,7 @@ typename BPlusTree<T>::Iterator BPlusTree<T>::search(const T& entry) const {
 }
 
 template <typename T>
-void BPlusTree<T>::transfer_left(int i) {
+void BPlusTree<T>::transfer_left(size_t i) {
     assert(i < subset_size);
     // should never call if sibling has nothing to borrow
     assert(subset[i + 1]->data_size > 1);

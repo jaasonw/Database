@@ -124,7 +124,7 @@ T List<T>::pop_front() {
         this->_size--;
         return LinkedList::delete_head(this->_data);
     }
-    assert("cannot pop from an empty list" == "");
+    assert(false && "cannot pop from an empty list");
     return NULL;
 }
 
@@ -157,7 +157,7 @@ void List<T>::insert(int pos, const T& item) {
     LinkedList::Node<T>*walk = this->_data;
     for (int i = 0; i < pos; i++, walk = walk->_next) {
         if (walk == NULL && i != pos - 1) {
-            assert("inserted element at invalid position" == "");
+            assert(false && "inserted element at invalid position");
         }
         // insert at end edge case
         if (walk == NULL && i == pos - 1) {

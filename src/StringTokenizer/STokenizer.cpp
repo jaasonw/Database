@@ -1,10 +1,10 @@
 #include "StringTokenizer/STokenizer.h"
 
-STokenizer::STokenizer() : pos(0), buffer(""), state(0) {
+STokenizer::STokenizer() {
     make_table(state_table);
 }
 
-STokenizer::STokenizer(const char* str) : pos(0), state(0) {
+STokenizer::STokenizer(const char* str) {
     make_table(state_table);
     strcpy(buffer, str);
 }
@@ -73,7 +73,7 @@ void STokenizer::make_table(int state_table[][MAX_COLUMNS]) {
 }
 
 bool STokenizer::get_token(int start_state, std::string& token) {
-    int last_pos = pos;
+    size_t last_pos = pos;
     bool has_token = state_machine::get_token(buffer, pos, state_table, start_state);
     char _token[MAX_BUFFER] = "";
     strncpy(_token, buffer + last_pos, pos + 1 - last_pos);
@@ -93,7 +93,7 @@ STokenizer& operator>>(STokenizer& s, string_tokenizer::Token& t) {
     std::string str;
     s.get_token(s.state, str);
     int _state = 0;
-    int _pos = 0;
+    size_t _pos = 0;
     state_machine::get_token(str.c_str(), _pos, s.state_table, _state);
     t.set_type(_state);
     t.set_string(str);

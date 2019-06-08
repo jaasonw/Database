@@ -116,7 +116,7 @@ T Queue<T>::pop() {
         this->_size--;
         return LinkedList::delete_head(this->_data);
     }
-    assert("cannot pop from an empty Queue" == "");
+    assert(false && "cannot pop from an empty Queue");
     return T();
 }
 

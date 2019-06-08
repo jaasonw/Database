@@ -48,7 +48,7 @@ bool operator>=(const Pair<K, V>& left, const Pair<K, V>& right) {
 }
 
 template <typename K, typename V>
-void Pair<K, V>::operator+=(const Pair& other) {
+void Pair<K, V>::operator+=(const Pair&) {
     // value = value + other.value;
 }
 
