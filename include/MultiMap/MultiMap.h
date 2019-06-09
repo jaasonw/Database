@@ -76,7 +76,7 @@ public:
     // Iterators
     Iterator begin() const;
     Iterator end() const;
-    Iterator first_ge(const Key& entry) const;
+    Iterator lower_bound(const Key& entry) const;
 
     // operations
     bool contains(const Key& key);
@@ -150,8 +150,8 @@ typename MultiMap<Key, T>::Iterator MultiMap<Key, T>::end() const {
 }
 
 template <typename Key, typename T>
-typename MultiMap<Key, T>::Iterator MultiMap<Key, T>::first_ge(const Key& entry) const {
-    return Iterator(tree.first_ge(entry));
+typename MultiMap<Key, T>::Iterator MultiMap<Key, T>::lower_bound(const Key& entry) const {
+    return Iterator(tree.lower_bound(entry));
 }
 
 } // namespace MultiMap
