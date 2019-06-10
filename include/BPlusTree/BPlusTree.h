@@ -869,6 +869,6 @@ BPlusTree<T>::lower_bound(const T& entry) const {
     else if (!found && !is_leaf())
         return subset[index]->search(entry);
     else if (!found && is_leaf())
-        return Iterator(Iterator((BPlusTree<T>*)this, index));
+        return Iterator((BPlusTree<T>*)this, index);
     return Iterator(nullptr);
 }
