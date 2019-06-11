@@ -45,7 +45,7 @@ bool SQL::execute_string(std::string command, bool verbose) {
             }
         }
         // create
-        if (command == "CREATE" || command == "MAKE") {
+        else if (command == "CREATE" || command == "MAKE") {
             if (!tables.contains(table_name)) {
                 std::ofstream fout;
                 fout.open(TABLES_FILE, std::ios::app);
@@ -58,7 +58,7 @@ bool SQL::execute_string(std::string command, bool verbose) {
             }
         }
         // insert
-        if (command == "INSERT") {
+        else if (command == "INSERT") {
             if (!tables.contains(table_name)) {
                 Table invalid_table(table_name);
             }
@@ -70,7 +70,7 @@ bool SQL::execute_string(std::string command, bool verbose) {
             }
         }
         // drop
-        if (command == "DROP") {
+        else if (command == "DROP") {
             if (tables.contains(table_name)) {
                 remove(tables[table_name].get_filename().c_str());
                 tables.erase(table_name);
@@ -85,8 +85,15 @@ bool SQL::execute_string(std::string command, bool verbose) {
                 Table invalid_table(table_name);
             }
         }
-        if (command == "TABLES") {
+        // print tables command
+        else if (command == "TABLES") {
             print_table_list();
+        }
+        // exits the program
+        else if (command == "EXIT") {
+            if (tables.contains("temp"))
+                execute_string("DROP TABLE temp");
+            exit(0);
         }
         return true;
     } catch (std::runtime_error& e) {

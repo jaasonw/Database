@@ -12,6 +12,7 @@ SQLStateMachine::SQLStateMachine() {
     keywords["VALUES"] = sql_parser::VALUES;
     keywords["DROP"] = sql_parser::DROP;
     keywords["TABLES"] = sql_parser::LIST_TABLES;
+    keywords["EXIT"] = sql_parser::EXIT;
     keywords["*"] = sql_parser::ASTERISK;
     keywords[","] = sql_parser::COMMA;
     keywords["("] = sql_parser::OPEN_PARENTH;
@@ -133,6 +134,9 @@ SQLStateMachine::SQLStateMachine() {
 
     // list tables
     state_machine::mark_cell(0, state_table, sql_parser::LIST_TABLES, 32);
+    // exit
+    state_machine::mark_cell(0, state_table, sql_parser::EXIT, 32);
+
     #ifdef ENABLE_NON_STANDARD_SQL
         // insert command parenthesis skipping
         state_machine::mark_cell(23, state_table, sql_parser::STRING, 25);

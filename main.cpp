@@ -15,9 +15,7 @@ int main(int argc, char const* argv[]) {
         sql.execute_file(argv[1]);
     }
     sql.interactive();
-    // this is the end of the session, remove the temp file
-    remove("temp.db");
-
+    
     cout << endl;
     system("pause");
     return 0;
