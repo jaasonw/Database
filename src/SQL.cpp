@@ -3,10 +3,14 @@
 SQL::SQL() {
     print_welcome();
     get_tables();
+    if (tables.contains("temp"))
+        execute_string("DROP TABLE temp");
 }
 SQL::SQL(const SQL&) {
     print_welcome();
     get_tables();
+    if (tables.contains("temp"))
+        execute_string("DROP TABLE temp");
 }
 
 SQL::~SQL() {
