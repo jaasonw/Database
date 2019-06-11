@@ -8,17 +8,12 @@ class SQL {
 private:
     const char* TABLES_FILE = "tables.txt";
     Parser parser;
-    Map::Map<std::string, Table*> tables;
+    Map::Map<std::string, Table> tables;
     void get_tables();
     void print_table_list();
     void print_welcome();
 public:
     SQL();
-    // this just overrides the default shallow copy
-    SQL(const SQL&);
-    ~SQL();
-    // this just overrides the default shallow copy
-    SQL& operator=(const SQL& other);
 
     void interactive();
     // opens a text file and runs the commands

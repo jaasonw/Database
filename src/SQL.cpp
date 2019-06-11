@@ -6,29 +6,6 @@ SQL::SQL() {
     if (tables.contains("temp"))
         execute_string("DROP TABLE temp");
 }
-SQL::SQL(const SQL&) {
-    print_welcome();
-    get_tables();
-    if (tables.contains("temp"))
-        execute_string("DROP TABLE temp");
-}
-
-SQL::~SQL() {
-    for (auto it = tables.begin(); it != nullptr; ++it) {
-        delete *it;
-    }
-}
-
-SQL& SQL::operator=(const SQL& other) {
-    if (this == &other)
-        return *this;
-    for (auto it = tables.begin(); it != nullptr; ++it) {
-        delete *it;
-    }
-    get_tables();
-    // print_table_list();
-    return *this;
-}
 
 void SQL::interactive() {
     std::string command;
@@ -61,26 +38,23 @@ bool SQL::execute_string(std::string command, bool verbose) {
                 Table invalid_table(table_name);
             }
             else {
-                tables[table_name]->select(fields, parse_tree["where"]);
-                Table temp("temp");
-                std::cout << temp << '\n';
+                // TODO: this is in shambles if you try to select from temp
+                tables["temp"] =
+                    tables[table_name].select(fields, parse_tree["where"]);
+                tables["temp"].print_table() << '\n';
             }
         }
         // create
         if (command == "CREATE" || command == "MAKE") {
-            if (tables.contains(table_name)) {
-                delete tables[table_name];
-                tables[table_name] = nullptr;
-            }
             if (!tables.contains(table_name)) {
                 std::ofstream fout;
                 fout.open(TABLES_FILE, std::ios::app);
                 fout << '\n' << table_name;
                 fout.close();
             }
-            tables[table_name] = new Table(table_name, fields);
+            tables[table_name] = Table(table_name, fields);
             if (verbose) {
-                std::cout << *tables[table_name] << '\n';
+                std::cout << tables[table_name] << '\n';
             }
         }
         // insert
@@ -89,18 +63,16 @@ bool SQL::execute_string(std::string command, bool verbose) {
                 Table invalid_table(table_name);
             }
             else {
-                tables[table_name]->insert_into(fields);
+                tables[table_name].insert_into(fields);
                 if (verbose) {
-                    std::cout << *tables[table_name] << '\n';
+                    std::cout << tables[table_name] << '\n';
                 }
             }
         }
         // drop
         if (command == "DROP") {
             if (tables.contains(table_name)) {
-                remove(tables[table_name]->get_filename().c_str());
-                delete tables[table_name];
-                tables[table_name] = nullptr;
+                remove(tables[table_name].get_filename().c_str());
                 tables.erase(table_name);
                 std::ofstream fout;
                 fout.open(TABLES_FILE);
@@ -152,7 +124,7 @@ void SQL::get_tables() {
     fin.open(TABLES_FILE);
     std::string tablename;
     while (fin >> tablename) {
-        tables[tablename] = new Table(tablename);
+        tables[tablename] = Table(tablename);
     }
     fin.close();
 }

@@ -64,7 +64,7 @@ void Table::insert_into(const std::vector<std::string>& fields) {
     f.close();
 }
 
-void Table::select(const std::vector<std::string>& fields,
+Table Table::select(const std::vector<std::string>& fields,
                    const std::vector<std::string>& where) {
     if (!bin_io::file_exists(get_filename().c_str()))
         throw std::runtime_error(CANNOT_FIND_TABLE);
@@ -94,6 +94,7 @@ void Table::select(const std::vector<std::string>& fields,
                 temp.insert_into(r.to_vector());
             }
         }
+        return temp;
     }
     else {
         for (size_t i = 0; i < fields.size(); ++i) {
@@ -124,36 +125,13 @@ void Table::select(const std::vector<std::string>& fields,
                 temp.insert_into(temp_row);
             }
         }
+        return temp;
     }
     file_stream.close();
 }
 
-std::ostream& operator<<(std::ostream& outs, Table& table) {
-    std::fstream file_stream;
-    bin_io::open_fileRW(file_stream, table.get_filename().c_str());
-    for (auto e : table.columns) {
-        outs << std::setw(constants::MAX_BLOCK_COLS) << std::left;
-        outs << e;
-    }
-    outs << '\n';
-    outs << std::string(table.columns.size() * constants::MAX_BLOCK_COLS, '-');
-    outs << '\n';
-
-    Record r;
-    // sort by first column
-    auto sorted = table.index[table.columns[0]];
-    for (auto it = sorted.begin(); it != nullptr; ++it) {
-        for (size_t i = 0; i < it->size(); ++i) {
-            r.read(file_stream, it->at(i));
-            auto row = r.to_vector();
-            for (size_t j = 0; j < row.size(); ++j) {
-                outs << std::setw(constants::MAX_BLOCK_COLS) << std::left;
-                outs << row[j];
-            }
-            outs << '\n';
-        }
-    }
-    file_stream.close();
+std::ostream& operator<<(std::ostream& outs, const Table& table) {
+    outs << &table;
     return outs;
 }
 
@@ -169,7 +147,7 @@ void Table::init_file() {
     f.close();
 }
 
-std::string Table::get_filename() { return (name + ".db"); }
+std::string Table::get_filename() const { return (name + ".db"); }
 
 void Table::reindex() {
     std::fstream file_stream;
@@ -266,4 +244,33 @@ std::vector<long> Table::get_equal(std::string arg1, std::string arg2) {
         }
     }
     return results;
+}
+
+std::ostream& Table::print_table(std::ostream& outs) {
+    std::fstream file_stream;
+    bin_io::open_fileRW(file_stream, get_filename().c_str());
+    for (auto e : columns) {
+        outs << std::setw(constants::MAX_BLOCK_COLS) << std::left;
+        outs << e;
+    }
+    outs << '\n';
+    outs << std::string(columns.size() * constants::MAX_BLOCK_COLS, '-');
+    outs << '\n';
+
+    Record r;
+    // sort by first column
+    auto sorted = index[columns[0]];
+    for (auto it = sorted.begin(); it != nullptr; ++it) {
+        for (size_t i = 0; i < it->size(); ++i) {
+            r.read(file_stream, it->at(i));
+            auto row = r.to_vector();
+            for (size_t j = 0; j < row.size(); ++j) {
+                outs << std::setw(constants::MAX_BLOCK_COLS) << std::left;
+                outs << row[j];
+            }
+            outs << '\n';
+        }
+    }
+    file_stream.close();
+    return outs;
 }

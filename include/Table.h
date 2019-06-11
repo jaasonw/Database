@@ -58,14 +58,18 @@ public:
     void insert_into(const std::vector<std::string>& fields);
 
     // querys the table and places the results into temp.db
-    void select(const std::vector<std::string>& fields, const std::vector<std::string>& where);
+    // returns the temp table
+    Table select(const std::vector<std::string>& fields, const std::vector<std::string>& where);
 
     // initilizes an empty file with the columns
     void init_file();
 
     // returns a string with the filename
-    std::string get_filename();
+    std::string get_filename() const;
 
-    // returns a vector of entries satisfying the query
-    friend std::ostream& operator<<(std::ostream& outs, Table& table);
+    // prints the memory address of the table
+    friend std::ostream& operator<<(std::ostream& outs, const Table& table);
+
+    // prints the contents of the table
+    std::ostream& print_table(std::ostream& outs = std::cout);
 };
