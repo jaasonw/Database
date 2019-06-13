@@ -227,7 +227,7 @@ std::vector<long> Table::get_less(std::string arg1, std::string arg2) {
     if (!index.contains(arg1))
         throw std::runtime_error(INVALID_NAME + arg1);
     std::vector<long> results;
-    for (auto it = index[arg1].begin(); it.key() < arg2; ++it) {
+    for (auto it = index[arg1].begin(); it != nullptr && it.key() < arg2; ++it) {
         for (size_t i = 0; i < it->size(); ++i) {
             results.push_back(it->at(i));
         }
