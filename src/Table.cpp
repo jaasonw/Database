@@ -165,7 +165,7 @@ void Table::reindex() {
 }
 
 std::vector<long> Table::evaluate_where(Queue<std::string>& where) {
-    Queue<std::vector<long>> results;
+    Stack<std::vector<long>> results;
     while (!where.empty()) {
         if (string_util::uppercase(where.front()) != "AND" &&
             string_util::uppercase(where.front()) != "OR") {
