@@ -125,7 +125,7 @@ T List<T>::pop_front() {
         return LinkedList::delete_head(this->_data);
     }
     assert(false && "cannot pop from an empty list");
-    return NULL;
+    return T();
 }
 
 // returns an iterator to the 1st occurance of item
