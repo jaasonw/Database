@@ -13,6 +13,7 @@ void STokenizer::make_table(int state_table[][MAX_COLUMNS]) {
     const char* ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
     const char* NUMBERS = "1234567890";
     const char* PUNCTUATION = ",\\.?!;\"'()[]{}/";
+    const char* COMPARISON = "<>";
     const char* WHITESPACE = " \t\n\r";
 
     state_machine::init_table(state_table);
@@ -29,6 +30,8 @@ void STokenizer::make_table(int state_table[][MAX_COLUMNS]) {
     state_machine::mark_fail(state_table,       8);
     state_machine::mark_success(state_table,    9);
     state_machine::mark_success(state_table,    10);
+    state_machine::mark_success(state_table,    11);
+    state_machine::mark_success(state_table,    12);
 
     // mark alphabet
     state_machine::mark_cells(0, state_table, ALPHA, 1);
@@ -70,6 +73,12 @@ void STokenizer::make_table(int state_table[][MAX_COLUMNS]) {
     // mark apostrophe cases
     state_machine::mark_cell(0, state_table, '\'', 6);
     state_machine::mark_cell(1, state_table, '\'', 6);
+
+    // mark relational operators
+    state_machine::mark_cells(0, state_table, COMPARISON, 11);
+    state_machine::mark_cell(0, state_table, '=', 12);
+    state_machine::mark_cell(11, state_table, '=', 12);
+
 }
 
 bool STokenizer::get_token(int start_state, std::string& token) {
