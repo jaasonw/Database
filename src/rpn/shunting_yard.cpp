@@ -3,8 +3,8 @@
 Queue<std::string> infix_to_postfix(const std::vector<std::string>& infix) {
     // operator -> precedence
     Map::Map<std::string, int> operators;
-    operators["AND"] = 0;
     operators["OR"] = 0;
+    operators["AND"] = 1;
     operators[">"] = 2;
     operators[">="] = 2;
     operators["<"] = 2;
@@ -28,5 +28,8 @@ Queue<std::string> infix_to_postfix(const std::vector<std::string>& infix) {
     while (!stack.empty()) {
         queue.push(stack.pop());
     }
+    #ifdef DEBUG
+        std::cout << queue << '\n';
+    #endif
     return queue;
 }
