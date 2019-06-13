@@ -54,7 +54,7 @@ bool SQL::execute_string(std::string command, bool verbose) {
             }
             tables[table_name] = Table(table_name, fields);
             if (verbose) {
-                std::cout << tables[table_name] << '\n';
+                tables[table_name].print_table() << '\n';
             }
         }
         // insert
@@ -65,7 +65,7 @@ bool SQL::execute_string(std::string command, bool verbose) {
             else {
                 tables[table_name].insert_into(fields);
                 if (verbose) {
-                    std::cout << tables[table_name] << '\n';
+                    tables[table_name].print_table() << '\n';
                 }
             }
         }
@@ -106,7 +106,7 @@ void SQL::execute_file(std::string filename) {
     std::ifstream fin;
     fin.open(filename);
     std::string cmd;
-    for (int i = 1; std::getline(fin, cmd);) {
+    for (int i = 0; std::getline(fin, cmd);) {
         if (cmd.size() > 0 && (cmd.substr(0, 2) == "//" || cmd.at(0) == '#')) {
             std::cout << cmd << '\n';
         }
