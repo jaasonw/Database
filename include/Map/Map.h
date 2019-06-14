@@ -19,7 +19,7 @@ public:
         Iterator(typename BPlusTree<Pair<Key, T>>::Iterator it)
             : tree_iter(it) {}
 
-        T operator*() { return tree_iter->value; }
+        const T& operator*() { return tree_iter->value; }
         T* operator->() { return &tree_iter.operator->()->value; }
 
         // i++
