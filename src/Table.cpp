@@ -1,5 +1,7 @@
 #include "Table.h"
 
+const char* Table::TEMP = "temp";
+
 Table::Table() : name("") {}
 Table::Table(std::string name) : name(name) {
     // this shouldnt call on a nonexistent table
@@ -79,7 +81,7 @@ Table Table::select(const std::vector<std::string>& fields,
 
     // this might need to be replaced with something else later
     if (fields[0] == "*") {
-        Table temp("temp", columns);
+        Table temp(TEMP, columns);
 
         Record r;
         if (where_indices.size() > 0 || where.size() > 0) {
@@ -94,6 +96,7 @@ Table Table::select(const std::vector<std::string>& fields,
                 temp.insert_into(r.to_vector());
             }
         }
+        file_stream.close();
         return temp;
     }
     else {
@@ -102,7 +105,7 @@ Table Table::select(const std::vector<std::string>& fields,
                 throw std::runtime_error(INVALID_NAME + fields[i]);
             }
         }
-        Table temp("temp", fields);
+        Table temp(TEMP, fields);
 
         Record r;
         if (where_indices.size() > 0 || where.size() > 0) {
@@ -125,9 +128,13 @@ Table Table::select(const std::vector<std::string>& fields,
                 temp.insert_into(temp_row);
             }
         }
+        file_stream.close();
         return temp;
     }
     file_stream.close();
+    // this shouldn't really ever get here, but return an empty table in case
+    // it ever does
+    return Table();
 }
 
 std::ostream& operator<<(std::ostream& outs, const Table& table) {

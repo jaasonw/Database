@@ -72,4 +72,6 @@ public:
 
     // prints the contents of the table
     std::ostream& print_table(std::ostream& outs = std::cout);
+
+    static const char* TEMP;
 };

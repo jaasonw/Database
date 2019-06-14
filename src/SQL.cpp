@@ -3,8 +3,8 @@
 SQL::SQL() {
     print_welcome();
     get_tables();
-    if (tables.contains("temp"))
-        execute_string("DROP TABLE temp");
+    if (tables.contains(Table::TEMP))
+        execute_string("DROP TABLE " + std::string(Table::TEMP));
 }
 
 void SQL::interactive() {
@@ -39,9 +39,9 @@ bool SQL::execute_string(std::string command, bool verbose) {
             }
             else {
                 // TODO: this is in shambles if you try to select from temp
-                tables["temp"] =
+                tables[Table::TEMP] =
                     tables[table_name].select(fields, parse_tree["where"]);
-                tables["temp"].print_table() << '\n';
+                tables[Table::TEMP].print_table() << '\n';
             }
         }
         // create
@@ -91,8 +91,8 @@ bool SQL::execute_string(std::string command, bool verbose) {
         }
         // exits the program
         else if (command == "EXIT") {
-            if (tables.contains("temp"))
-                execute_string("DROP TABLE temp");
+            if (tables.contains(Table::TEMP))
+                execute_string("DROP TABLE " + std::string(Table::TEMP));
             exit(0);
         }
         return true;
