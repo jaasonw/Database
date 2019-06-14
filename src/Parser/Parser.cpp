@@ -1,5 +1,4 @@
 #include "Parser/Parser.h"
-#define DEBUG
 
 void Parser::set_string(std::string input) {
     tokens.clear();
