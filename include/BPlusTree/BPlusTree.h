@@ -78,6 +78,10 @@ private:
     // return a pointer to this key. NULL if not there.
     T* find(const T& entry);
 
+    // true if entry can be found in the array
+    bool contains(const T& entry) const;
+
+    // links the leaves
     BPlusTree<T>* link_leaves(BPlusTree<T>* previous = nullptr);
 
     BPlusTree<T>* next = nullptr;
@@ -165,9 +169,6 @@ public:
     void clear_tree();
     // copy other into this object
     void copy_tree(const BPlusTree<T>& other);
-
-    // true if entry can be found in the array
-    bool contains(const T& entry) const;
 
     // return an iterator to entry in the tree
     Iterator search(const T& entry) const;
