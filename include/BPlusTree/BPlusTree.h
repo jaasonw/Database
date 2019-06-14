@@ -172,8 +172,10 @@ public:
 
     // return an iterator to entry in the tree
     Iterator search(const T& entry) const;
-    // return an iterator to the first entry greater than or equal to
+    // returns an iterator to the first element whose key is not less than entry
     Iterator lower_bound(const T& entry) const;
+    // returns an iterator to the first element whose key is greater than entry
+    Iterator upper_bound(const T& entry) const;
 
     // count the number of elements in the tree
     int size() const;
@@ -874,6 +876,28 @@ BPlusTree<T>::lower_bound(const T& entry) const {
             return Iterator((BPlusTree<T>*)this, index);
         else
             return Iterator(next);
+    }
+    return Iterator(nullptr);
+}
+template <typename T>
+typename BPlusTree<T>::Iterator
+BPlusTree<T>::upper_bound(const T& entry) const {
+    size_t index = b_array::first_ge(data, data_size, entry);
+    bool found = index < data_size && data[index] == entry;
+    
+    if (found && is_leaf()) {
+        Iterator lower((BPlusTree<T>*)this, index);
+        return ++lower;
+    }
+    else if (found && !is_leaf())
+        return subset[index + 1]->upper_bound(entry);
+    else if (!found && !is_leaf())
+        return subset[index]->upper_bound(entry);
+    else if (!found && is_leaf()) {
+        if (index <= data_size - 1)
+            return Iterator((BPlusTree<T>*)this, index);
+        else
+            return Iterator(next, 0);
     }
     return Iterator(nullptr);
 }

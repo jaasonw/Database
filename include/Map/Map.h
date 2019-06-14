@@ -76,7 +76,10 @@ public:
     // Iterators
     Iterator begin() const;
     Iterator end() const;
+    // returns an iterator to the first element whose key is not less than entry
     Iterator lower_bound(const Key& entry) const;
+    // returns an iterator to the first element whose key is greater than entry
+    Iterator upper_bound(const Key& entry) const;
 
     // operations
     bool contains(const Key& key, const T& value);
@@ -154,8 +157,15 @@ typename Map<Key, T>::Iterator Map<Key, T>::end() const {
 }
 
 template <typename Key, typename T>
-typename Map<Key, T>::Iterator Map<Key, T>::lower_bound(const Key& entry) const {
+typename Map<Key, T>::Iterator
+Map<Key, T>::lower_bound(const Key& entry) const {
     return Iterator(tree.lower_bound(entry));
+}
+
+template <typename Key, typename T>
+typename Map<Key, T>::Iterator
+Map<Key, T>::upper_bound(const Key& entry) const {
+    return Iterator(tree.upper_bound(entry));
 }
 
 } // namespace Map
