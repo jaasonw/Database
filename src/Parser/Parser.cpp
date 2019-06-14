@@ -43,7 +43,6 @@ MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
             // we exited this loop while never finding a closing quote
             if (sql_state.is_quote_state(last_state))
                 throw std::runtime_error("Syntax error: no closing quote");
-            // last_state = sql_state.update_state(token_string);
         }
 
 
