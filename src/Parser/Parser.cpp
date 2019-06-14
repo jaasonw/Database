@@ -1,4 +1,5 @@
 #include "Parser/Parser.h"
+#define DEBUG
 
 void Parser::set_string(std::string input) {
     tokens.clear();
@@ -8,7 +9,6 @@ void Parser::set_string(std::string input) {
         tokenizer >> t;
         tokens.push(t);
     }
-    combine_quotes();
     #ifdef DEBUG
         std::cout << tokens << std::endl;
     #endif
@@ -21,6 +21,7 @@ MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
     int last_state = sql_state.get_state();
     while (!tokens.empty()) {
         string_tokenizer::Token t = tokens.pop();
+
         while (!tokens.empty() && isspace(t.token_str()[0])) {
             t = tokens.pop();
         }
@@ -28,58 +29,35 @@ MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
         // supposed to be there
         if (isspace(t.token_str()[0]))
             break;
-        std::string token_string = "";
-        token_string = t.token_str();
+
+        std::string token_string = t.token_str();
         last_state = sql_state.update_state(token_string);
-        // this wont make any sense unless you look at the state diagram or the
-        // state table spreadsheet
-        switch (last_state) {
-            case -1:
-                throw std::runtime_error("Error unexpected token: " +
-                                         token_string);
-                break;
-            // select
-            case 1:
-            // create
-            case 13:
-            // insert
-            case 20:
-            // drop
-            case 29:
-            // any 1 word commands i might want to add
-            case 32:
-                parse_tree["command"] += string_util::uppercase(token_string);
-                break;
-            // select: asterisk
-            case 2:
-            // select: string
-            case 3:
-            // create: field name
-            case 17:
-            // insert: entry name
-            case 25:
-                parse_tree["fields"] += token_string;
-                break;
-            // select: table name
-            case 6:
-            // create: table name
-            case 15:
-            // insert: table name
-            case 22:
-            // drop: table name
-            case 31:
-                parse_tree["table_name"] += token_string;
-                break;
-            // field name
-            case 9:
-            // relational
-            case 10:
-            // entry name
-            case 11:
-            // logical
-            case 12:
-                parse_tree["where"] += token_string;
-                break;
+
+        if (sql_state.is_quote_state(last_state)) {
+            token_string = "";
+            while (!tokens.empty() && sql_state.is_quote_state(last_state)) {
+                std::string _token_string = tokens.pop().token_str();
+                last_state = sql_state.update_state(_token_string);
+                if (_token_string != "\"")
+                    token_string += _token_string;
+            }
+            // we exited this loop while never finding a closing quote
+            if (sql_state.is_quote_state(last_state))
+                throw std::runtime_error("Syntax error: no closing quote");
+            // last_state = sql_state.update_state(token_string);
+        }
+
+
+        if (sql_state.is_invalid())
+            throw std::runtime_error("Error unexpected token: " + token_string);
+        else {
+            std::string key = sql_state.get_parse_key(last_state);
+            if (key != "") {
+                if (key == "command")
+                    parse_tree[key] += string_util::uppercase(token_string);
+                else
+                    parse_tree[key] += token_string;
+            }
         }
     }
     if (sql_state.is_invalid() || !sql_state.is_success()) {
@@ -89,29 +67,4 @@ MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
         std::cout << parse_tree << std::endl;
     #endif
     return parse_tree;
-}
-
-void Parser::combine_quotes() {
-    Queue<string_tokenizer::Token> _tokens;
-    // combine words between quotation marks
-    while (!tokens.empty()) {
-        auto current_token = tokens.pop();
-        if (current_token.token_str() == "\"") {
-            std::string token_string = "";
-            while (!tokens.empty() && tokens.front().token_str() != "\"") {
-                token_string += tokens.pop().token_str();
-            }
-            // we ran out of tokens without ever hitting another quote
-            if (tokens.empty())
-                throw std::runtime_error("Syntax error: no closing quote");
-            // get rid of the closing quote
-            if (tokens.front().token_str() == "\"")
-                tokens.pop();
-
-            _tokens.push(string_tokenizer::Token(token_string, 1));
-        } else {
-            _tokens.push(current_token);
-        }
-    }
-    tokens = _tokens;
 }

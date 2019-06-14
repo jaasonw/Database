@@ -26,6 +26,12 @@ namespace state_machine {
 
     // Mark this row and column
     void mark_cell(int row, int table[][MAX_COLUMNS], int column, int state);
+    
+    // marks the whole row
+    void mark_all(int row, int table[][MAX_COLUMNS], int state);
+
+    // marks the cell as -1
+    void unmark_cell(int row, int table[][MAX_COLUMNS], int column);
 
     // This can realistically be used on a small table
     void print_table(int _table[][MAX_COLUMNS]);

@@ -15,6 +15,8 @@ private:
     // the state table
     int state_table[state_machine::NUM_ROWS][state_machine::MAX_COLUMNS];
     int last_state = 0;
+    Map::Map<int, std::string> parse_states;
+    BPlusTree<int> quote_states;
 public:
     SQLStateMachine();
     int update_state(std::string token);
@@ -23,4 +25,7 @@ public:
     bool is_success();
     bool is_fail();
     bool is_invalid();
+    bool is_quote_state(int state);
+    bool is_parse_state(int state);
+    std::string get_parse_key(int state);
 };
