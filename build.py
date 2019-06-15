@@ -38,12 +38,12 @@ FLAGS = [
     "-std=c++11",
     "-Wall",
     "-Wextra",
-    "-Ofast",
-    # "-g"
+    "-Ofast"
 ]
 
 # add clang specific flags here
 if COMPILER == "clang++":
+    FLAGS.append("-target x86_64-pc-windows-gnu")
     pass
 
 flag_str = ""
