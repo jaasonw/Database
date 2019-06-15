@@ -12,6 +12,8 @@ I've included a python build script that invokes the either the g++ or clang com
 
 Use ```python build.py``` to run it
 
+Or just download from releases
+
 ## Usage
 
 Because this isn't a fully featured SQL Database, it only supports the following commands
