@@ -21,7 +21,7 @@ public:
         T& operator*() { return _node->_item; }
         T* operator->() { return &_node->item; }
 
-        friend Iterator operator++(Iterator& it, int unused) {
+        friend Iterator operator++(Iterator& it, int) {
             Iterator hold;
             hold = it;
             it._node = it._node->_next;
