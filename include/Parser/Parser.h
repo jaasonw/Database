@@ -19,6 +19,7 @@ private:
 
     SQLStateMachine sql_state;
 
+    // tokenizes the input string into the token queue
     void set_string(std::string input);
 
     // syntax error message constants

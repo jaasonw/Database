@@ -2,7 +2,9 @@
 #include <iostream>
 #include <stdexcept>
 
-// it's like an array, but it has bounds checking
+// An Array wrapper class that provides bounds checking on the [] operator
+// does not resize like a vector so its performance should be comparable to a
+// regular array
 namespace b_array {
 template <typename T>
 class Array {

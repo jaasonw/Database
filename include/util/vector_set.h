@@ -5,6 +5,7 @@
 // set operations for vectors
 namespace vset {
 
+// returns a vector containing the intersection of v1 and v2
 template <typename T>
 std::vector<T> set_intersect(const std::vector<T>& v1, const std::vector<T>& v2) {
     std::vector<T> result;
@@ -21,6 +22,7 @@ std::vector<T> set_intersect(const std::vector<T>& v1, const std::vector<T>& v2)
     return result;
 }
 
+// returns a vector containing the union of v1 and v2
 template <typename T>
 std::vector<T> set_union(const std::vector<T>& v1, const std::vector<T>& v2) {
     std::vector<T> result;

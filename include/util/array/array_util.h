@@ -57,7 +57,6 @@ void ordered_insert(b_array::Array<T>& data, size_t& size, const T& entry) {
 template <typename T>
 int first_ge(const b_array::Array<T>& data, size_t size, const T& entry) {
     for (size_t i = 0; i < size; i++) {
-        // if (!(data[i] < entry)) {
         if (data[i] >= entry) {
             return i;
         }
