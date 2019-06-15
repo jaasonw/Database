@@ -180,22 +180,17 @@ std::vector<long> Table::evaluate_where(Queue<std::string>& where) {
             std::string arg1 = where.pop();
             std::string arg2 = where.pop();
             std::string op = where.pop();
-            if (op == "=") {
+            if (op == "=")
                 results.push(get_equal(arg1, arg2));
-            }
-            else if (op == "<") {
+            else if (op == "<")
                 results.push(get_less(arg1, arg2));
-            } else if (op == "<=") {
-                results.push(vset::set_union(get_less(arg1, arg2),
-                                             get_equal(arg1, arg2)));
-            } else if (op == ">") {
+            else if (op == "<=")
+                results.push(get_less_equal(arg1, arg2));
+            else if (op == ">")
                 results.push(get_greater(arg1, arg2));
-            } else if (op == ">=") {
-                results.push(vset::set_union(get_greater(arg1, arg2),
-                                             get_equal(arg1, arg2)));
-            }
-        }
-        else {
+            else if (op == ">=")
+                results.push(get_greater_equal(arg1, arg2));
+        } else {
             std::string logic = where.pop();
             if (string_util::uppercase(logic) == "AND") {
                 results.push(
@@ -228,11 +223,35 @@ std::vector<long> Table::get_greater(std::string arg1, std::string arg2) {
     }
     return results;
 }
+std::vector<long> Table::get_greater_equal(std::string arg1, std::string arg2) {
+    if (!index.contains(arg1))
+        throw std::runtime_error(INVALID_NAME + arg1);
+    std::vector<long> results;
+    for (auto it = index[arg1].lower_bound(arg2); it != nullptr; ++it) {
+        for (size_t i = 0; i < it->size(); ++i) {
+            results.push_back(it->at(i));
+        }
+    }
+    return results;
+}
 std::vector<long> Table::get_less(std::string arg1, std::string arg2) {
     if (!index.contains(arg1))
         throw std::runtime_error(INVALID_NAME + arg1);
     std::vector<long> results;
-    for (auto it = index[arg1].begin(); it != nullptr && it.key() < arg2; ++it) {
+    MultiMap::MultiMap<std::string, long> _index = index[arg1];
+    for (auto it = _index.begin(); it != _index.lower_bound(arg2); ++it) {
+        for (size_t i = 0; i < it->size(); ++i) {
+            results.push_back(it->at(i));
+        }
+    }
+    return results;
+}
+std::vector<long> Table::get_less_equal(std::string arg1, std::string arg2) {
+    if (!index.contains(arg1))
+        throw std::runtime_error(INVALID_NAME + arg1);
+    std::vector<long> results;
+    MultiMap::MultiMap<std::string, long> _index = index[arg1];
+    for (auto it = _index.begin(); it != _index.upper_bound(arg2); ++it) {
         for (size_t i = 0; i < it->size(); ++i) {
             results.push_back(it->at(i));
         }
@@ -264,7 +283,7 @@ std::ostream& Table::print_table(std::ostream& outs) {
 
     Record r;
     // sort by first column
-    auto sorted = index[columns[0]];
+    MultiMap::MultiMap<std::string, long> sorted = index[columns[0]];
     for (auto it = sorted.begin(); it != nullptr; ++it) {
         for (size_t i = 0; i < it->size(); ++i) {
             r.read(file_stream, it->at(i));

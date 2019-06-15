@@ -34,6 +34,12 @@ private:
     std::vector<long> get_greater(std::string arg1, std::string arg2);
     // returns the indicies of all entries of arg1 that are less than arg2
     std::vector<long> get_less(std::string arg1, std::string arg2);
+    // returns the indicies of all entries of arg1 that are greater than or
+    // equal to arg2
+    std::vector<long> get_greater_equal(std::string arg1, std::string arg2);
+    // returns the indicies of all entries of arg1 that are less than or equal
+    // to arg2
+    std::vector<long> get_less_equal(std::string arg1, std::string arg2);
     // returns the indicies of all entries of arg1 that are equal than arg2
     std::vector<long> get_equal(std::string arg1, std::string arg2);
 
