@@ -12,6 +12,9 @@ private:
     void get_tables();
     void print_table_list();
     void print_welcome();
+    const char* UNKNOWN_TABLE =
+        "Error: Unknown table: , see \"tables\" for available tables";
+
 public:
     SQL();
 

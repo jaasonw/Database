@@ -35,7 +35,7 @@ bool SQL::execute_string(std::string command, bool verbose) {
         // select
         if (command == "SELECT") {
             if (!tables.contains(table_name)) {
-                Table invalid_table(table_name);
+                throw std::runtime_error(UNKNOWN_TABLE);
             }
             else {
                 // TODO: this is in shambles if you try to select from temp
@@ -60,7 +60,7 @@ bool SQL::execute_string(std::string command, bool verbose) {
         // insert
         else if (command == "INSERT") {
             if (!tables.contains(table_name)) {
-                Table invalid_table(table_name);
+                throw std::runtime_error(UNKNOWN_TABLE);
             }
             else {
                 tables[table_name].insert_into(fields);
@@ -82,7 +82,7 @@ bool SQL::execute_string(std::string command, bool verbose) {
                 fout.close();
             }
             else {
-                Table invalid_table(table_name);
+                throw std::runtime_error(UNKNOWN_TABLE);
             }
         }
         // print tables command
