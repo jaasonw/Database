@@ -39,7 +39,7 @@ public:
             return left.tree_iter == right.tree_iter;
         }
         friend bool operator!=(const Iterator& left, const Iterator& right) {
-            return left.tree_iter != right.iter;
+            return left.tree_iter != right.tree_iter;
         }
         // compare to items
         friend bool operator==(const Iterator& left, const T& right) {
