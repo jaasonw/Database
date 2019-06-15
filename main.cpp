@@ -1,7 +1,7 @@
 /*
  * Author: Jason Wong
- * Project:
- * Purpose:
+ * Project: Database
+ * Purpose: Implement a small version of a SQL Relational Database
  * Notes:
  */
 #include "SQL.h"
