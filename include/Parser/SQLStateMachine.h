@@ -28,7 +28,7 @@ public:
     void reset_state();
     // returns true if the current state is a success state
     bool is_success();
-    // returns true if the current state is a not a state
+    // returns true if the current state is a not a success state
     bool is_fail();
     // returns true if the current state is an invalid state
     bool is_invalid();
