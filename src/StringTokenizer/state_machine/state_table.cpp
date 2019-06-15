@@ -45,9 +45,9 @@ namespace state_machine {
         _table[row][column] = state;
     }
 
-    // Mark this row and column
+    // Mark all in row
     void mark_all(int row, int _table[][MAX_COLUMNS], int state) {
-        for (int i = 0; i < MAX_COLUMNS; ++i) {
+        for (int i = 1; i < MAX_COLUMNS; ++i) {
             _table[row][i] = state;
         }
     }
