@@ -133,10 +133,12 @@ public:
         }
         // compare to self
         friend bool operator==(const Iterator& left, const Iterator& right) {
-            return left.node_ptr == right.node_ptr;
+            return left.node_ptr == right.node_ptr &&
+                   left.offset == right.offset;
         }
         friend bool operator!=(const Iterator& left, const Iterator& right) {
-            return left.node_ptr != right.node_ptr;
+            return left.node_ptr != right.node_ptr ||
+                   left.offset != right.offset;
         }
         // compare to items
         friend bool operator==(const Iterator& left, const T& right) {
