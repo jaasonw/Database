@@ -17,7 +17,7 @@ private:
 
 public:
     SQL();
-
+    // provides the user with an interactive interface to execute commands
     void interactive();
     // opens a text file and runs the commands
     void execute_file(std::string filename);
