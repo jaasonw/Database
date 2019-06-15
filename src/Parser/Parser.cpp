@@ -42,12 +42,12 @@ MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
             }
             // we exited this loop while never finding a closing quote
             if (sql_state.is_quote_state(last_state))
-                throw std::runtime_error("Syntax error: no closing quote");
+                throw std::runtime_error(NO_CLOSING_QUOTE);
         }
 
 
         if (sql_state.is_invalid())
-            throw std::runtime_error("Error unexpected token: " + token_string);
+            throw std::runtime_error(UNEXPECTED_TOKEN + token_string);
         else {
             std::string key = sql_state.get_parse_key(last_state);
             if (key != "") {
@@ -59,7 +59,7 @@ MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
         }
     }
     if (sql_state.is_invalid() || !sql_state.is_success()) {
-        throw std::runtime_error("Error: unexpected end of input");
+        throw std::runtime_error(END_OF_INPUT);
     }
     #ifdef DEBUG
         std::cout << parse_tree << std::endl;

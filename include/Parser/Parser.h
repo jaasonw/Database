@@ -20,6 +20,11 @@ private:
     SQLStateMachine sql_state;
 
     void set_string(std::string input);
+
+    // syntax error message constants
+    const char* NO_CLOSING_QUOTE = "Syntax Error: no closing quote";
+    const char* UNEXPECTED_TOKEN = "Syntax Error: unexpected token: ";
+    const char* END_OF_INPUT = "Syntax Error: unexpected end of input";
 public:
     Parser() { set_string(""); };
     Parser(std::string input) { set_string(input); };
