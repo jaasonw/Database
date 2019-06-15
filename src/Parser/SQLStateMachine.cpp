@@ -13,6 +13,7 @@ SQLStateMachine::SQLStateMachine() {
     keywords["DROP"] = sql_parser::DROP;
     keywords["TABLES"] = sql_parser::LIST_TABLES;
     keywords["EXIT"] = sql_parser::EXIT;
+    keywords["EXEC"] = sql_parser::EXEC;
     keywords["*"] = sql_parser::ASTERISK;
     keywords[","] = sql_parser::COMMA;
     keywords["("] = sql_parser::OPEN_PARENTH;
@@ -82,6 +83,8 @@ SQLStateMachine::SQLStateMachine() {
     state_machine::mark_fail(state_table, 47);
     state_machine::mark_fail(state_table, 48);
     state_machine::mark_fail(state_table, 49);
+    state_machine::mark_fail(state_table, 50);
+    state_machine::mark_success(state_table, 51);
 
     // this wont make any sense unless you look at the state diagram or the
     // state table spreadsheet
@@ -98,16 +101,20 @@ SQLStateMachine::SQLStateMachine() {
     parse_states[29] = "command";
     // any 1 word commands i might want to add
     parse_states[32] = "command";
+    // exec
+    parse_states[50] = "command";
 
     // field states
     // select: asterisk
-    parse_states[2] ="fields";
+    parse_states[2] = "fields";
     // select: string
-    parse_states[3] ="fields";
+    parse_states[3] = "fields";
     // create: field name
     parse_states[17] = "fields";
     // insert: entry name
     parse_states[25] = "fields";
+    // exec: filename
+    parse_states[51] = "fields";
 
     // table name states
     // select: table name
@@ -312,6 +319,12 @@ SQLStateMachine::SQLStateMachine() {
     state_machine::mark_cell(0, state_table, sql_parser::LIST_TABLES, 32);
     // exit
     state_machine::mark_cell(0, state_table, sql_parser::EXIT, 32);
+
+    // execute file
+    state_machine::mark_cell(0, state_table, sql_parser::EXEC, 50);
+    state_machine::mark_all(50, state_table, 51);
+    state_machine::mark_all(51, state_table, 51);
+
 
     #ifdef ENABLE_NON_STANDARD_SQL
         // insert command parenthesis skipping

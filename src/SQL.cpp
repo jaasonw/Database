@@ -95,6 +95,15 @@ bool SQL::execute_string(std::string command, bool verbose) {
                 execute_string("DROP TABLE " + std::string(Table::TEMP));
             exit(0);
         }
+        // executes a given file
+        else if (command == "EXEC") {
+            std::string filename = "";
+            for (size_t i = 0; i < fields.size(); ++i) {
+                if (fields[i] != "\"")
+                    filename += fields[i];
+            }
+            execute_file(filename);
+        }
         return true;
     } catch (std::runtime_error& e) {
         std::cerr << e.what() << '\n';

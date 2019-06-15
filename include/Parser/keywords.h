@@ -16,6 +16,7 @@ enum Keyword {
     VALUES,
     DROP,
     LIST_TABLES,
+    EXEC,
     EXIT,
     ASTERISK,
     COMMA,
