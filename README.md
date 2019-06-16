@@ -31,5 +31,5 @@ In addition to the SQL subset, a few auxilary commands are also supported
 | Command | Action
 | :---- | :----
 | `tables` | Displays a list of the available tables
-| `exec <file>` | Opens a executes a file containing SQL commands
+| `exec <file>` | Opens and executes a file containing SQL commands
 | `exit` | Closes the session
