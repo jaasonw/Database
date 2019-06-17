@@ -4,16 +4,11 @@
 #include <cassert>
 #include <exception>
 #include <iostream>
-#include <string>
-#include <sstream>
 #include <vector>
 
 template <typename T>
 class BPlusTree {
 private:
-    // keep a log of inputs and outputs used to recreate a tree
-    std::vector<std::string> event_log;
-
     static const int MAXIMUM = 2;
     static const int MINIMUM = MAXIMUM / 2;
 
@@ -55,7 +50,6 @@ private:
     // remove the biggest child of this tree->entry
     T remove_biggest();
 
-    // MIGHT NOT NEED THESE FOR B+TREE
     // transfer one element LEFT from child i
     void rotate_left(int i);
     // transfer one element RIGHT from child i
@@ -140,13 +134,6 @@ public:
             return left.node_ptr != right.node_ptr ||
                    left.offset != right.offset;
         }
-        // compare to items
-        friend bool operator==(const Iterator& left, const T& right) {
-            return *(left.node_ptr) == right;
-        }
-        friend bool operator!=(const Iterator& left, const T& right) {
-            return *(left.node_ptr) != right;
-        }
         // compare to null
         friend bool operator==(const Iterator& left, std::nullptr_t) {
             return left.node_ptr == nullptr;
@@ -205,10 +192,8 @@ public:
     Iterator end() const;
 
     // DEBUG STUFF
-    // prints a tree with all he pointers and data 
+    // prints a tree with all the pointers and data 
     void print_as_tree_debug(std::ostream& outs = std::cout, int level = 0) const;
-    // prints the events in the event log
-    void print_event_log(std::ostream& outs = std::cout) const;
 };
 
 template <typename T>
@@ -258,13 +243,6 @@ void BPlusTree<T>::copy_tree(const BPlusTree<T>& other) {
             subset[i] = new BPlusTree<T>(other.duplicates_allowed);
             subset[i]->copy_tree(*(other.subset[i]));
         }
-    }
-}
-
-template <typename T>
-void BPlusTree<T>::print_event_log(std::ostream& outs) const {
-    for (size_t i = 0; i < event_log.size(); ++i) {
-        outs << event_log[i] << std::endl;
     }
 }
 
@@ -385,12 +363,6 @@ void BPlusTree<T>::loose_insert(const T& entry) {
 }
 template <typename T>
 void BPlusTree<T>::insert(const T& entry) {
-
-    // Log event
-    std::stringstream event;
-    event << "Inserting: " << entry;
-    event_log.push_back(event.str());
-
     // the function that called this has to be root
     loose_insert(entry);
     // so do root checks here
@@ -555,12 +527,6 @@ void BPlusTree<T>::merge_with_next_subset(size_t i) {
 
 template <typename T>
 void BPlusTree<T>::remove(const T& entry) {
-
-    // Log event
-    std::stringstream event;
-    event << "Removing: " << entry;
-    event_log.push_back(event.str());
-
     // the function that called this has to be root
     loose_remove(entry);
     if (data_size < MINIMUM && subset_size > 0) {
