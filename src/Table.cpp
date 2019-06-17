@@ -271,8 +271,10 @@ std::vector<long> Table::get_equal(std::string arg1, std::string arg2) {
 }
 
 std::ostream& Table::print_table(std::ostream& outs) {
+    const int NUM_WIDTH = 8;
     std::fstream file_stream;
     bin_io::open_fileRW(file_stream, get_filename().c_str());
+    outs << std::setw(NUM_WIDTH) << std::left << "Num";
     for (auto e : columns) {
         outs << std::setw(constants::MAX_BLOCK_COLS) << std::left;
         outs << e;
@@ -284,8 +286,10 @@ std::ostream& Table::print_table(std::ostream& outs) {
     Record r;
     // sort by first column
     MultiMap::MultiMap<std::string, long> sorted = index[columns[0]];
+    int num = 0;
     for (auto it = sorted.begin(); it != nullptr; ++it) {
-        for (size_t i = 0; i < it->size(); ++i) {
+        for (size_t i = 0; i < it->size(); ++i, ++num) {
+            outs << std::setw(NUM_WIDTH) << std::left << num;
             r.read(file_stream, it->at(i));
             auto row = r.to_vector();
             for (size_t j = 0; j < row.size(); ++j) {
