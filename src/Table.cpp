@@ -286,7 +286,7 @@ std::ostream& Table::print_table(std::ostream& outs) {
     Record r;
     // sort by first column
     MultiMap::MultiMap<std::string, long> sorted = index[columns[0]];
-    int num = 0;
+    int num = 1;
     for (auto it = sorted.begin(); it != nullptr; ++it) {
         for (size_t i = 0; i < it->size(); ++i, ++num) {
             outs << std::setw(NUM_WIDTH) << std::left << num;
