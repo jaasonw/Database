@@ -167,7 +167,7 @@ public:
     Iterator upper_bound(const T& entry) const;
 
     // count the number of elements in the tree
-    int size() const;
+    size_t size() const;
     // true if the tree is empty
     bool empty() const;
 
@@ -826,6 +826,14 @@ bool BPlusTree<T>::is_valid() {
             return false;
     }
     return true;
+}
+template <typename T>
+size_t BPlusTree<T>::size() const {
+    size_t s = 0;
+    for (auto it = begin(); it != nullptr; ++it) {
+        ++s;
+    }
+    return s;
 }
 
 template <typename T>
