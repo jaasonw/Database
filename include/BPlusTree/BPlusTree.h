@@ -835,6 +835,10 @@ size_t BPlusTree<T>::size() const {
     }
     return s;
 }
+template <typename T>
+bool BPlusTree<T>::empty() const {
+    return begin() == nullptr;
+}
 
 template <typename T>
 typename BPlusTree<T>::Iterator
