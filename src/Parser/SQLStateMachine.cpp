@@ -335,12 +335,12 @@ SQLStateMachine::SQLStateMachine() {
     #endif
 }
 
-int SQLStateMachine::update_state(std::string token) {
+int SQLStateMachine::update_state(const std::string& token) {
     sql_parser::Keyword type = sql_parser::STRING;
     // uppercase the token
-    token = string_util::uppercase(token);
-    if (keywords.contains(token)) {
-        type = keywords[token];
+    std::string _token = string_util::uppercase(token);
+    if (keywords.contains(_token)) {
+        type = keywords[_token];
     }
     last_state = state_table[last_state][type];
     return last_state;

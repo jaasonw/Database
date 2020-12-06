@@ -16,7 +16,7 @@ void SQL::interactive() {
     }
 }
 
-bool SQL::execute_string(std::string command, bool verbose) {
+bool SQL::execute_string(const std::string& command, bool verbose) {
     try {
         auto parse_tree = parser.parse(command);
         #ifdef DEBUG
@@ -111,7 +111,7 @@ bool SQL::execute_string(std::string command, bool verbose) {
     }
 }
 
-void SQL::execute_file(std::string filename) {
+void SQL::execute_file(const std::string& filename) {
     std::ifstream fin;
     fin.open(filename);
     std::string cmd;

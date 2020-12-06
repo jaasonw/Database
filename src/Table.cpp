@@ -3,14 +3,14 @@
 const char* Table::TEMP = "temp";
 
 Table::Table() : name("") {}
-Table::Table(std::string name) : name(name) {
+Table::Table(const std::string& name) : name(name) {
     // this shouldnt call on a nonexistent table
     if (!bin_io::file_exists(get_filename().c_str()))
         throw std::runtime_error(CANNOT_FIND_TABLE);
     db_read();
     reindex();
 }
-Table::Table(std::string name, const std::vector<std::string>& columns) {
+Table::Table(const std::string& name, const std::vector<std::string>& columns) {
     // the technology isnt there for this yet :)
     if (columns.size() > constants::MAX_BLOCK_ROWS) {
         throw std::runtime_error(MAX_FIELD_EXCEEDED);
@@ -212,7 +212,8 @@ std::vector<long> Table::evaluate_where(Queue<std::string>& where) {
         return std::vector<long>();
 }
 
-std::vector<long> Table::get_greater(std::string arg1, std::string arg2) {
+std::vector<long> Table::get_greater(const std::string& arg1,
+                                     const std::string& arg2) {
     if (!index.contains(arg1))
         throw std::runtime_error(INVALID_NAME + arg1);
     std::vector<long> results;
@@ -223,7 +224,8 @@ std::vector<long> Table::get_greater(std::string arg1, std::string arg2) {
     }
     return results;
 }
-std::vector<long> Table::get_greater_equal(std::string arg1, std::string arg2) {
+std::vector<long> Table::get_greater_equal(const std::string& arg1,
+                                           const std::string& arg2) {
     if (!index.contains(arg1))
         throw std::runtime_error(INVALID_NAME + arg1);
     std::vector<long> results;
@@ -234,7 +236,8 @@ std::vector<long> Table::get_greater_equal(std::string arg1, std::string arg2) {
     }
     return results;
 }
-std::vector<long> Table::get_less(std::string arg1, std::string arg2) {
+std::vector<long> Table::get_less(const std::string& arg1,
+                                  const std::string& arg2) {
     if (!index.contains(arg1))
         throw std::runtime_error(INVALID_NAME + arg1);
     std::vector<long> results;
@@ -246,7 +249,8 @@ std::vector<long> Table::get_less(std::string arg1, std::string arg2) {
     }
     return results;
 }
-std::vector<long> Table::get_less_equal(std::string arg1, std::string arg2) {
+std::vector<long> Table::get_less_equal(const std::string& arg1,
+                                        const std::string& arg2) {
     if (!index.contains(arg1))
         throw std::runtime_error(INVALID_NAME + arg1);
     std::vector<long> results;
@@ -258,7 +262,8 @@ std::vector<long> Table::get_less_equal(std::string arg1, std::string arg2) {
     }
     return results;
 }
-std::vector<long> Table::get_equal(std::string arg1, std::string arg2) {
+std::vector<long> Table::get_equal(const std::string& arg1,
+                                   const std::string& arg2) {
     if (!index.contains(arg1))
         throw std::runtime_error(INVALID_NAME + arg1);
     std::vector<long> results;

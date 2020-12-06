@@ -21,7 +21,7 @@ public:
     SQLStateMachine();
     // updates the state according to the new token
     // returns the new state
-    int update_state(std::string token);
+    int update_state(const std::string& token);
     // returns the current state
     int get_state() { return last_state; };
     // sets the current state to 0

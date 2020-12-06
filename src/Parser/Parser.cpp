@@ -1,6 +1,6 @@
 #include "Parser/Parser.h"
 
-void Parser::set_string(std::string input) {
+void Parser::set_string(const std::string& input) {
     tokens.clear();
     tokenizer.set_string(input.c_str());
     string_tokenizer::Token t;
@@ -13,7 +13,7 @@ void Parser::set_string(std::string input) {
     #endif
 }
 
-MultiMap::MultiMap<std::string, std::string> Parser::parse(std::string input) {
+MultiMap::MultiMap<std::string, std::string> Parser::parse(const std::string& input) {
     MultiMap::MultiMap<std::string, std::string> parse_tree;
     set_string(input);
     sql_state.reset_state();

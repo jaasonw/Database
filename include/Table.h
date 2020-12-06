@@ -31,18 +31,22 @@ private:
     std::vector<long> evaluate_where(Queue<std::string>& where);
 
     // returns the indicies of all entries of arg1 that are greater than arg2
-    std::vector<long> get_greater(std::string arg1, std::string arg2);
+    std::vector<long> get_greater(const std::string& arg1,
+                                  const std::string& arg2);
     // returns the indicies of all entries of arg1 that are less than arg2
-    std::vector<long> get_less(std::string arg1, std::string arg2);
+    std::vector<long> get_less(const std::string& arg1,
+                               const std::string& arg2);
     // returns the indicies of all entries of arg1 that are greater than or
     // equal to arg2
-    std::vector<long> get_greater_equal(std::string arg1, std::string arg2);
+    std::vector<long> get_greater_equal(const std::string& arg1,
+                                        const std::string& arg2);
     // returns the indicies of all entries of arg1 that are less than or equal
     // to arg2
-    std::vector<long> get_less_equal(std::string arg1, std::string arg2);
+    std::vector<long> get_less_equal(const std::string& arg1,
+                                     const std::string& arg2);
     // returns the indicies of all entries of arg1 that are equal than arg2
-    std::vector<long> get_equal(std::string arg1, std::string arg2);
-
+    std::vector<long> get_equal(const std::string& arg1,
+                                const std::string& arg2);
 
     // just a bunch of error message constants, don't mind these
     const char* CANNOT_FIND_TABLE = "Error: cannot find specified table";
@@ -55,10 +59,9 @@ public:
     // default constructor so map doesnt flip
     Table();
     // for opening an existing table
-    Table(std::string name);
+    Table(const std::string& name);
     // for initializing a new table with new fields
-    Table(std::string name, const std::vector<std::string>& columns);
-
+    Table(const std::string& name, const std::vector<std::string>& columns);
 
     // inserts a row at the end of the file
     void insert_into(const std::vector<std::string>& fields);

@@ -11,6 +11,6 @@ private:
     Map::Map<std::string, MultiMap::MultiMap<std::string, long>> index;
 public:
     friend std::ostream& operator<<(std::ostream& outs, const Index& i);
-    MultiMap::MultiMap<std::string, long>& operator[](std::string key);
-    bool contains(std::string field);
+    MultiMap::MultiMap<std::string, long>& operator[](const std::string& key);
+    bool contains(const std::string& field);
 };

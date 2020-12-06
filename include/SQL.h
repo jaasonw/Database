@@ -20,7 +20,7 @@ public:
     // provides the user with an interactive interface to execute commands
     void interactive();
     // opens a text file and runs the commands
-    void execute_file(std::string filename);
+    void execute_file(const std::string& filename);
     // executes a singular command, returns true if command was successful
-    bool execute_string(std::string str, bool verbose = false);
+    bool execute_string(const std::string& str, bool verbose = false);
 };

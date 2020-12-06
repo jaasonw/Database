@@ -3,7 +3,7 @@
 using namespace string_tokenizer;
 
 Token::Token(): _token(""), _type(0) {}
-Token::Token(std::string str, int type): _token(str), _type(type)  {}
+Token::Token(const std::string& str, int type) : _token(str), _type(type) {}
 
 std::string Token::type_string() const {
     switch (_type) {

@@ -20,7 +20,7 @@ private:
     SQLStateMachine sql_state;
 
     // tokenizes the input string into the token queue
-    void set_string(std::string input);
+    void set_string(const std::string& input);
 
     // syntax error message constants
     const char* NO_CLOSING_QUOTE = "Syntax Error: no closing quote";
@@ -28,7 +28,7 @@ private:
     const char* END_OF_INPUT = "Syntax Error: unexpected end of input";
 public:
     Parser() { set_string(""); };
-    Parser(std::string input) { set_string(input); };
+    Parser(const std::string& input) { set_string(input); };
     // converts the command into a parse tree, uppercases commands
-    MultiMap::MultiMap<std::string, std::string> parse(std::string input);
+    MultiMap::MultiMap<std::string, std::string> parse(const std::string& input);
 };

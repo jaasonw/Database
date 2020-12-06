@@ -10,7 +10,8 @@ std::ostream& operator<<(std::ostream& outs, const Index& i) {
     }
     return outs;
 }
-MultiMap::MultiMap<std::string, long>& Index::operator[](std::string key) {
+MultiMap::MultiMap<std::string, long>&
+Index::operator[](const std::string& key) {
     return index[key];
 }
-bool Index::contains(std::string field) { return index.contains(field); }
+bool Index::contains(const std::string& field) { return index.contains(field); }
