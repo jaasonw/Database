@@ -686,7 +686,7 @@ void BPlusTree<T>::print_as_linked(std::ostream& outs) const {
 }
 template <typename T>
 void BPlusTree<T>::print_as_list(std::ostream& outs) const {
-    for (auto it = begin(); it != nullptr; it++) {
+    for (auto it = begin(); it != nullptr; ++it) {
         if (it != nullptr)
             outs << *it << std::endl;
     }
