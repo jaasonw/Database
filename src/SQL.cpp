@@ -32,9 +32,13 @@ bool SQL::execute_string(const std::string& command, bool verbose) {
             table_name = parse_tree["table_name"][0];
         if (parse_tree["fields"].size() > 0)
             fields = parse_tree["fields"];
+
+        if (table_name == Table::TEMP) {
+            throw std::runtime_error(ILLEGAL_NAME);
+        }
         // select
         if (command == "SELECT") {
-            if (!tables.contains(table_name) || table_name == Table::TEMP) {
+            if (!tables.contains(table_name)) {
                 throw std::runtime_error(UNKNOWN_TABLE);
             } else {
                 tables[Table::TEMP] =
@@ -44,9 +48,6 @@ bool SQL::execute_string(const std::string& command, bool verbose) {
         }
         // create
         else if (command == "CREATE" || command == "MAKE") {
-            if (table_name == Table::TEMP) {
-                throw std::runtime_error(ILLEGAL_NAME);
-            }
             if (!tables.contains(table_name)) {
                 std::ofstream fout;
                 fout.open(TABLES_FILE, std::ios::app);
@@ -60,9 +61,6 @@ bool SQL::execute_string(const std::string& command, bool verbose) {
         }
         // insert
         else if (command == "INSERT") {
-            if (table_name == Table::TEMP) {
-                throw std::runtime_error(ILLEGAL_NAME);
-            }
             if (!tables.contains(table_name)) {
                 throw std::runtime_error(UNKNOWN_TABLE);
             }
@@ -75,9 +73,6 @@ bool SQL::execute_string(const std::string& command, bool verbose) {
         }
         // drop
         else if (command == "DROP") {
-            if (table_name == Table::TEMP) {
-                throw std::runtime_error(ILLEGAL_NAME);
-            }
             if (tables.contains(table_name)) {
                 remove(tables[table_name].get_filename().c_str());
                 tables.erase(table_name);
