@@ -60,6 +60,9 @@ bool SQL::execute_string(const std::string& command, bool verbose) {
         }
         // insert
         else if (command == "INSERT") {
+            if (table_name == Table::TEMP) {
+                throw std::runtime_error(ILLEGAL_NAME);
+            }
             if (!tables.contains(table_name)) {
                 throw std::runtime_error(UNKNOWN_TABLE);
             }
@@ -72,6 +75,9 @@ bool SQL::execute_string(const std::string& command, bool verbose) {
         }
         // drop
         else if (command == "DROP") {
+            if (table_name == Table::TEMP) {
+                throw std::runtime_error(ILLEGAL_NAME);
+            }
             if (tables.contains(table_name)) {
                 remove(tables[table_name].get_filename().c_str());
                 tables.erase(table_name);
