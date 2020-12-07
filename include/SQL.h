@@ -14,6 +14,7 @@ private:
     void print_welcome();
     const char* UNKNOWN_TABLE =
         "Error: Unknown table see \"tables\" for available tables";
+    const char* ILLEGAL_NAME = "Error: Illegal table name";
 
 public:
     SQL();

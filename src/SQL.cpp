@@ -34,11 +34,9 @@ bool SQL::execute_string(const std::string& command, bool verbose) {
             fields = parse_tree["fields"];
         // select
         if (command == "SELECT") {
-            if (!tables.contains(table_name)) {
+            if (!tables.contains(table_name) || table_name == Table::TEMP) {
                 throw std::runtime_error(UNKNOWN_TABLE);
-            }
-            else {
-                // TODO: this is in shambles if you try to select from temp
+            } else {
                 tables[Table::TEMP] =
                     tables[table_name].select(fields, parse_tree["where"]);
                 tables[Table::TEMP].print_table() << '\n';
@@ -46,6 +44,9 @@ bool SQL::execute_string(const std::string& command, bool verbose) {
         }
         // create
         else if (command == "CREATE" || command == "MAKE") {
+            if (table_name == Table::TEMP) {
+                throw std::runtime_error(ILLEGAL_NAME);
+            }
             if (!tables.contains(table_name)) {
                 std::ofstream fout;
                 fout.open(TABLES_FILE, std::ios::app);
@@ -147,6 +148,7 @@ void SQL::get_tables() {
 void SQL::print_table_list() {
     int num = 1;
     for (auto it = tables.begin(); it != nullptr; ++it, ++num) {
+        if (it.key() != "temp")
         std::cout << std::setw(20) << std::left << it.key();
         if (num > 0 && num % 4 == 0) {
             std::cout << '\n';
@@ -155,6 +157,6 @@ void SQL::print_table_list() {
     std::cout << '\n';
 }
 void SQL::print_welcome() {
-    std::cout << "JasonSQL version 1.0.0" << '\n';
+    std::cout << "JasonSQL version 1.0.1" << '\n';
     std::cout << "\"tables\" for table list" << '\n';
 }
