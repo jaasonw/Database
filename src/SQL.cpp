@@ -3,8 +3,8 @@
 SQL::SQL() {
     print_welcome();
     get_tables();
-    if (tables.contains(Table::TEMP))
-        execute_string("DROP TABLE " + std::string(Table::TEMP));
+    // if (tables.contains(Table::TEMP))
+    //     execute_string("DROP TABLE " + std::string(Table::TEMP));
 }
 
 void SQL::interactive() {
