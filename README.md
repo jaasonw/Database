@@ -8,9 +8,7 @@ None, All data structures (except vector) are written from scratch and doesn't u
 
 ## Building
 
-I've included a python build script that invokes the either the g++ or clang compiler. 
-
-Use ```python build.py``` to run it
+Run ```cmake --build .```
 
 Or just download from releases
 
